@@ -3,5 +3,6 @@ slot: 0
 name: Shorts pipeline
 meta: solo · railway
 line: Long video in. Short clips out. A human says yes.
-# Private repository: no link pill.
+cta: see the repo ↗
+href: https://github.com/techo-anant/shorts-automation
 demo: ShortsDemo
