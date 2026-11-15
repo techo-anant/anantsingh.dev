@@ -36,6 +36,8 @@ export interface WorldsState {
   pw: WorldId;
   /** Focused item index in the gallery. */
   fi: 0 | 1 | 2;
+  /** World ids in page order for this visit (Contact last). Set on init. */
+  order: WorldId[];
 }
 
 export type Proj = 'idle' | 'gallery' | 'focus';
@@ -50,7 +52,12 @@ export const worlds = createStore<WorldsState>({
   proj: 'idle',
   pw: 0,
   fi: 0,
+  order: [0, 1, 2, 3, 4],
 });
+
+/** Position of world i on the page (0 = first). */
+export const positionOf = (i: WorldId, order: readonly WorldId[] = worlds.get().order) =>
+  order.indexOf(i);
 
 /** §3.4 panel actions, shared by the world components. */
 export const panel = {
@@ -65,7 +72,13 @@ export function initWorlds(): void {
   const scroller = root?.querySelector<HTMLElement>('[data-scroller]');
   if (!root || !scroller) return;
 
+  // Sections are already in this visit's order (inline script in Worlds.astro).
   const sections = [...root.querySelectorAll<HTMLElement>('[data-section]')];
+  const idOf = (el: HTMLElement) => worldIndex(el.dataset.world ?? '') ?? 0;
+  const order = sections.map(idOf);
+  const pos = (i: WorldId) => positionOf(i, order);
+  const sectionOf = (i: WorldId) => sections[pos(i)];
+  worlds.set({ order, active: order[0] });
   const layers = [...root.querySelectorAll<HTMLElement>('[data-layer]')];
   const goLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-go]')];
   const menu = root.querySelector<HTMLElement>('[data-menu]');
@@ -104,8 +117,8 @@ export function initWorlds(): void {
   function activeFromScroll(): WorldId | undefined {
     if (!scroller) return undefined;
     const mid = scroller.scrollTop + scroller.clientHeight / 2;
-    const i = sections.findIndex((s) => s.offsetTop <= mid && mid < s.offsetTop + s.offsetHeight);
-    return i >= 0 ? (i as WorldId) : undefined;
+    const p = sections.findIndex((s) => s.offsetTop <= mid && mid < s.offsetTop + s.offsetHeight);
+    return p >= 0 ? order[p] : undefined;
   }
 
   function endJump() {
@@ -125,10 +138,10 @@ export function initWorlds(): void {
   function go(i: WorldId, scroll: boolean) {
     const from = worlds.get().active;
     setActive(i);
-    const target = sections[i];
+    const target = sectionOf(i);
     if (!scroll || !target || !scroller) return;
 
-    const smooth = !prefersReducedMotion() && Math.abs(i - from) === 1;
+    const smooth = !prefersReducedMotion() && Math.abs(pos(i) - pos(from)) === 1;
     jumping = true;
     window.clearTimeout(jumpTimer);
     // Fallback in case 'scrollend' never fires (already in place, old browser).
@@ -145,14 +158,16 @@ export function initWorlds(): void {
   worlds.subscribe((s, prev) => {
     const world = WORLDS[s.active];
     root.dataset.world = world.id;
+    root.dataset.pos = String(pos(s.active));
     // Under the cover the worlds run, but are out of reach for keyboard and AT.
     root.inert = !s.coverDone;
     root.toggleAttribute('data-entered', s.entered);
 
-    layers.forEach((layer, k) =>
-      layer.toggleAttribute('data-revealed', s.entered && k <= s.active),
+    // Background reveal follows page order: every layer up to the active one.
+    layers.forEach((layer) =>
+      layer.toggleAttribute('data-revealed', s.entered && pos(idOf(layer)) <= pos(s.active)),
     );
-    sections.forEach((sec, k) => sec.toggleAttribute('data-active', k === s.active));
+    sections.forEach((sec) => sec.toggleAttribute('data-active', idOf(sec) === s.active));
     goLinks.forEach((a) => {
       if (Number(a.dataset.go) === s.active) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
@@ -181,8 +196,7 @@ export function initWorlds(): void {
       if (jumping) return;
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        const i = sections.indexOf(entry.target as HTMLElement);
-        if (i >= 0) go(i as WorldId, false);
+        go(idOf(entry.target as HTMLElement), false);
       }
     },
     // A zero-height band across the middle of the scroller.
@@ -197,7 +211,7 @@ export function initWorlds(): void {
    * link would leave them with nothing to scroll).
    */
   function focusSection(i: WorldId) {
-    sections[i]?.focus({ preventScroll: true });
+    sectionOf(i)?.focus({ preventScroll: true });
   }
 
   // ---- Navigation --------------------------------------------------------
@@ -238,16 +252,17 @@ export function initWorlds(): void {
     if (target.closest('input, textarea, select, [contenteditable]')) return;
     if (event.key === ' ' && target.closest('button')) return;
 
+    // Keys move by page position, not by world id.
     let next: number;
     if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = WORLDS.length - 1;
+    else if (event.key === 'End') next = order.length - 1;
     else if (event.key in STEP) {
       const step = STEP[event.key] ?? 0;
-      next = active + (event.key === ' ' && event.shiftKey ? -step : step);
+      next = pos(active) + (event.key === ' ' && event.shiftKey ? -step : step);
     } else return;
 
     event.preventDefault();
-    const i = Math.max(0, Math.min(WORLDS.length - 1, next)) as WorldId;
+    const i = order[Math.max(0, Math.min(order.length - 1, next))] as WorldId;
     go(i, true);
     focusSection(i);
   });
@@ -270,8 +285,8 @@ export function initWorlds(): void {
   // ---- Start -------------------------------------------------------------
   // Deep link: /#contact starts on Contact without animating the scroll.
   const start = worldIndex(location.hash.slice(1));
-  if (start !== undefined && start > 0) {
-    scroller.scrollTop = sections[start]?.offsetTop ?? 0;
+  if (start !== undefined && pos(start) > 0) {
+    scroller.scrollTop = sectionOf(start)?.offsetTop ?? 0;
     worlds.set({ active: start });
   }
   hashReady = true;

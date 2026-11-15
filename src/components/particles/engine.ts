@@ -142,9 +142,10 @@ export class ParticleEngine {
     this.t0 = performance.now() / 1000;
   }
 
-  /** Colors and ambient renderers ease toward this world. */
-  setWorld(i: number): void {
+  /** Colors and ambient renderers ease toward this world (or jump, with snap). */
+  setWorld(i: number, snap = false): void {
     this.active = i;
+    if (snap) this.wt = this.wt.map((_, k) => (k === i ? 1 : 0));
   }
 
   /** Phone ↔ desktop: rebuild with the right N (same seed, same shapes). */
