@@ -1,6 +1,7 @@
 world: ai
 slot: 1
 name: Models in production
+meta: the Shorts pipeline · solo
 line: Three models, one pipeline.
 # No link: the CTA pill is hidden.
 demo: ModelsDemo
