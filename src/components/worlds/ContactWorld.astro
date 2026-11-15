@@ -206,9 +206,12 @@ const links = site
     gap: 18px;
   }
 
+  /* Phone: 8px more hit area above the text, without moving it (§12: 44px). */
   .mail {
     --fs: 29;
 
+    margin-top: -8px;
+    padding-top: 8px;
     line-height: 1.2;
     color: var(--ink);
     text-decoration: none;
@@ -239,7 +242,9 @@ const links = site
     transition: color 0.3s ease;
   }
 
+  /* A 44px target (§12); the text stays on the column edge. */
   .copy {
+    min-width: 44px;
     color: var(--muted);
   }
 
@@ -332,6 +337,8 @@ const links = site
     .mail {
       --fs: 42;
 
+      margin-top: 0;
+      padding-top: 0;
       line-height: 1.15;
     }
 
