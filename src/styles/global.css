@@ -1,4 +1,5 @@
 @import url('./tokens.css');
+@import url('./keyframes.css');
 
 *,
 *::before,
@@ -38,4 +39,54 @@ canvas {
 button {
   font: inherit;
   color: inherit;
+}
+
+/*
+ * A world's full-bleed background (§2.4), from the tokens of the nearest
+ * [data-world] scope. Contact's grain is a separate <Paper> layer.
+ */
+.world-bg {
+  background-color: var(--bg);
+  background-image: var(--bg-image);
+  background-position: var(--bg-position);
+  background-repeat: var(--bg-repeat);
+  background-size: var(--bg-size);
+}
+
+/*
+ * Fluid type (§4.2). Set --fs to the reference size in px (unitless).
+ * Phone:   clamp(0.85 × size, size / 390 × 100vw, 1.1 × size)
+ * Desktop: clamp(0.8 × size, size / 1440 × 100vw, 1.2 × size)
+ * Min and max are in rem so browser zoom still works.
+ */
+.fluid {
+  font-size: clamp(
+    calc(var(--fs) * 0.0531rem),
+    calc(var(--fs) * 100vw / 390),
+    calc(var(--fs) * 0.0688rem)
+  );
+}
+
+/* Desktop layout. Keep in sync with tokens.css and src/lib/layout.ts. */
+@media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+  .fluid {
+    font-size: clamp(
+      calc(var(--fs) * 0.05rem),
+      calc(var(--fs) * 100vw / 1440),
+      calc(var(--fs) * 0.075rem)
+    );
+  }
+}
+
+/* Visible to screen readers only. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

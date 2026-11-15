@@ -1,0 +1,475 @@
+---
+/**
+ * The worlds shell (BUILD_PLAN §6): five full-screen, scroll-snapped worlds
+ * with their backgrounds, the particle canvas (drawn from PR 4), the header,
+ * desktop nav and side dots, the phone menu and the footer.
+ *
+ * Behavior lives in ./worlds.ts. Navigation targets are real #hash links, so
+ * the page still works without JavaScript (see the <noscript> styles).
+ */
+import { WORLDS } from '../../lib/worlds';
+import Paper from '../paper/Paper.astro';
+---
+
+<div class="worlds" data-worlds data-world={WORLDS[0].id}>
+  <div class="layers" aria-hidden="true">
+    {WORLDS.map((w) => (
+      <div class="layer world-bg" data-layer data-world={w.id}>
+        {w.id === 'contact' && <Paper id="contact-layer" vignette={false} />}
+      </div>
+    ))}
+  </div>
+
+  <canvas class="particles" aria-hidden="true" data-particles></canvas>
+
+  <div class="scroller" data-scroller>
+    {WORLDS.map((w) => (
+      <section
+        id={w.id}
+        class="world"
+        data-world={w.id}
+        data-section
+        tabindex="-1"
+        aria-label={w.label}
+      >
+        <div class="world-content">{/* World content arrives in PRs 5 to 9. */}</div>
+      </section>
+    ))}
+  </div>
+
+  <header class="header">
+    <a class="brand fluid" href="/">
+      Anant Kumar Singh
+    </a>
+    <nav class="nav" aria-label="Worlds">
+      {WORLDS.map((w, i) => (
+        <a
+          class="nav-link fluid"
+          href={`#${w.id}`}
+          data-go={i}
+          aria-current={i === 0 ? 'true' : undefined}
+        >
+          {w.name}
+        </a>
+      ))}
+    </nav>
+    <span class="spacer" aria-hidden="true"></span>
+    <button
+      class="menu-btn fluid"
+      type="button"
+      aria-expanded="false"
+      aria-controls="world-menu"
+      data-menu-toggle
+    >
+      menu
+    </button>
+  </header>
+
+  <nav class="dots" aria-label="Jump to world">
+    {WORLDS.map((w, i) => (
+      <a
+        class="dot"
+        href={`#${w.id}`}
+        data-go={i}
+        aria-label={w.name}
+        aria-current={i === 0 ? 'true' : undefined}
+      >
+        <span />
+      </a>
+    ))}
+  </nav>
+
+  <nav id="world-menu" class="menu" aria-label="Worlds" hidden data-menu>
+    {WORLDS.map((w, i) => (
+      <a
+        class="menu-item fluid"
+        href={`#${w.id}`}
+        data-go={i}
+        aria-current={i === 0 ? 'true' : undefined}
+      >
+        {w.name}
+      </a>
+    ))}
+  </nav>
+
+  <div class="footer fluid" aria-hidden="true" data-footer>
+    <span>
+      {WORLDS.map((w) => (
+        <span data-for={w.id}>
+          <span class="on-desktop">{w.hint}</span>
+          <span class="on-phone">{w.hintPhone}</span>
+        </span>
+      ))}
+    </span>
+    <span>
+      {WORLDS.map((w) => (
+        <span data-for={w.id}>{w.caption}</span>
+      ))}
+    </span>
+  </div>
+</div>
+
+<noscript>
+  <style is:inline>
+    /* Without JavaScript: no reveal, no fixed chrome; each section paints its
+       own background and content is visible. Nav links still work (#hash). */
+    .layers,
+    .particles,
+    .dots,
+    .footer,
+    .menu-btn {
+      display: none !important;
+    }
+
+    .world {
+      background-color: var(--bg) !important;
+      background-image: var(--bg-image) !important;
+      background-position: var(--bg-position) !important;
+      background-repeat: var(--bg-repeat) !important;
+      background-size: var(--bg-size) !important;
+    }
+
+    .world-content {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .header {
+      background: var(--software-bg) !important;
+    }
+  </style>
+</noscript>
+
+<script>
+  import { initWorlds } from './worlds';
+
+  initWorlds();
+</script>
+
+<style>
+  .worlds {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--software-bg);
+    color: var(--ink);
+  }
+
+  /* §6.2 Background reveal: layer k grows out of the object when k <= active. */
+  .layers,
+  .layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .layer {
+    clip-path: circle(0% at var(--object-at));
+    transition: clip-path 1200ms cubic-bezier(0.7, 0, 0.2, 1);
+  }
+
+  .layer[data-revealed] {
+    clip-path: circle(150% at var(--object-at));
+  }
+
+  .particles {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* §6.1 Scroller: a size container, so world content can position against
+     the visible height with cqh units. */
+  .scroller {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    container-type: size;
+  }
+
+  .scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Sections may grow past the viewport on short screens (fix 4). */
+  .world {
+    position: relative;
+    min-height: 100cqh;
+    scroll-snap-align: start;
+    color: var(--ink);
+    font-family: var(--font-world);
+  }
+
+  /* Sections take focus programmatically (after navigation) so keys scroll;
+     the nav already shows where you are, so no ring on the whole screen. */
+  .world:focus {
+    outline: none;
+  }
+
+  /* §6.3 Section content reveal. */
+  .world-content {
+    position: relative;
+    min-height: 100cqh;
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+      opacity 350ms ease,
+      transform 350ms ease;
+  }
+
+  .world[data-active] .world-content {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 900ms ease 450ms,
+      transform 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) 450ms;
+  }
+
+  /* Header (phone first, §6.6). */
+  .header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 6;
+    display: flex;
+    height: 64px;
+    padding: 0 12px 0 24px;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .header > * {
+    pointer-events: auto;
+  }
+
+  .brand {
+    --fs: var(--brand-size);
+
+    padding: 10px 0;
+    font-family: var(--brand-font);
+    font-weight: var(--brand-weight);
+    letter-spacing: var(--brand-tracking);
+    text-transform: var(--brand-transform);
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 600ms ease;
+  }
+
+  .nav,
+  .spacer,
+  .dots {
+    display: none;
+  }
+
+  .menu-btn {
+    --fs: 12;
+
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: none;
+    background: none;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    text-decoration: underline 2px var(--accent);
+    text-underline-offset: 6px;
+    cursor: pointer;
+    transition: color 600ms ease;
+  }
+
+  /* §6.6 Phone menu. */
+  .menu {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    padding: 120px 24px 0;
+    flex-direction: column;
+    background: var(--bg);
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .menu[hidden] {
+    display: none;
+  }
+
+  .menu-item {
+    --fs: var(--menu-size);
+
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--brand-font);
+    font-weight: var(--menu-weight);
+    line-height: 1.1;
+    text-transform: var(--brand-transform);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .menu-item[aria-current='true'] {
+    color: var(--accent);
+  }
+
+  /* §6.7 Footer: hint left, caption right, for the active world only. */
+  .footer {
+    --fs: 10;
+
+    position: absolute;
+    right: 24px;
+    bottom: 16px;
+    left: 24px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    pointer-events: none;
+    transition: color 600ms ease;
+  }
+
+  [data-for],
+  .on-desktop {
+    display: none;
+  }
+
+  .worlds[data-world='software'] [data-for='software'],
+  .worlds[data-world='ai'] [data-for='ai'],
+  .worlds[data-world='robotics'] [data-for='robotics'],
+  .worlds[data-world='accounting'] [data-for='accounting'],
+  .worlds[data-world='contact'] [data-for='contact'] {
+    display: inline;
+  }
+
+  /* Focus rings in the active world's accent (§12). */
+  .brand:focus-visible,
+  .nav-link:focus-visible,
+  .dot:focus-visible,
+  .menu-btn:focus-visible,
+  .menu-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* Desktop layout (§4.4, §6.5). Keep in sync with src/lib/layout.ts. */
+  @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+    .header {
+      display: grid;
+      height: auto;
+      padding: 26px var(--col-x);
+      grid-template-columns: 1fr auto 1fr;
+      gap: 32px;
+    }
+
+    .brand {
+      --fs: var(--brand-size-lg);
+
+      justify-self: start;
+    }
+
+    .nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-link {
+      --fs: 13;
+
+      padding: 12px 0 10px;
+      border-bottom: 2px solid transparent;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      text-decoration: none;
+      transition:
+        color 600ms ease,
+        border-color 600ms ease;
+    }
+
+    .nav-link[aria-current='true'] {
+      border-bottom-color: var(--accent);
+      color: var(--ink);
+    }
+
+    /* Empty right column; keeps the nav centered. No counter (§1). */
+    .spacer {
+      display: block;
+      min-width: 140px;
+    }
+
+    .menu-btn,
+    .menu {
+      display: none;
+    }
+
+    .dots {
+      position: absolute;
+      top: 50%;
+      right: 28px;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transform: translateY(-50%);
+    }
+
+    .dot {
+      display: flex;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dot span {
+      width: 6px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--muted);
+      transition:
+        height 400ms ease,
+        background-color 600ms ease;
+    }
+
+    .dot[aria-current='true'] span {
+      height: 26px;
+      background: var(--accent);
+    }
+
+    .footer {
+      --fs: 12;
+
+      right: var(--col-x);
+      bottom: 30px;
+      left: var(--col-x);
+    }
+
+    .on-desktop {
+      display: inline;
+    }
+
+    .on-phone {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu {
+      animation: none;
+    }
+
+    .world-content,
+    .world[data-active] .world-content {
+      transform: none;
+    }
+  }
+</style>
