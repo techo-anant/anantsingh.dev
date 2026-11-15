@@ -259,7 +259,9 @@ export class Ambient {
     }
   }
 
-  private accounting(a: number, { ctx, W, t, phone, mono }: AmbientFrame) {
+  private accounting(a: number, { ctx, W, t: now, phone, reduced, mono }: AmbientFrame) {
+    // Reduced motion: the numbers and ticks hold still (§12).
+    const t = reduced ? 0 : now;
     ctx.font = `${phone ? 10 : 13}px ${mono}`;
     ctx.textAlign = 'right';
     this.cells.forEach((c) => {

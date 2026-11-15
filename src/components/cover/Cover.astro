@@ -11,7 +11,12 @@ import Paper from '../paper/Paper.astro';
 const site = await getSite();
 ---
 
-<div class="cover" data-cover data-fragments={JSON.stringify(site.coverFragments)}>
+<section
+  class="cover"
+  aria-label="Cover"
+  data-cover
+  data-fragments={JSON.stringify(site.coverFragments)}
+>
   <!-- §5.1 layer 2: receives the ink mask during the transition. -->
   <div class="cover-mask" data-cover-mask>
     <div class="paper-bg" aria-hidden="true"></div>
@@ -34,7 +39,7 @@ const site = await getSite();
   </div>
   <!-- §5.1 layer 3: the whole cover is the "turn the page" button. -->
   <button class="go" type="button" aria-label="Enter the autobiography" data-cover-go></button>
-</div>
+</section>
 
 <noscript>
   <style is:inline>
