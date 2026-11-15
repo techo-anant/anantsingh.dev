@@ -141,9 +141,11 @@ import Paper from '../paper/Paper.astro';
 </noscript>
 
 <script>
+  import { initParticles } from '../particles/particles';
   import { initWorlds } from './worlds';
 
   initWorlds();
+  initParticles();
 </script>
 
 <style>
