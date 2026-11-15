@@ -5,6 +5,7 @@
  *
  * Math is ported exactly; the values in §10 are what to check against.
  */
+import { objectFrame } from '../../lib/layout';
 import { rng } from '../../lib/rng';
 import { Ambient } from './ambient';
 import { fit, SHAPES, type Pt } from './shapes';
@@ -218,11 +219,9 @@ export class ParticleEngine {
     this.mx += (this.tmx - this.mx) * 0.05;
     this.my += (this.tmy - this.my) * 0.05;
 
-    // §4.3 Object placement.
-    const scale = this.phone ? W * 0.25 : Math.min(W, H) * 0.235,
-      F = scale * D;
-    const ox = this.phone ? W * 0.5 : W * 0.71,
-      oy = this.phone ? H * 0.417 : H * 0.48;
+    // §4.3 Object placement (shared with the world UI).
+    const { ox, oy, scale } = objectFrame(W, H, this.phone ? 'phone' : 'desktop');
+    const F = scale * D;
 
     for (let k = 0; k < this.wt.length; k++) {
       this.ambient.draw(k, this.wt[k], {

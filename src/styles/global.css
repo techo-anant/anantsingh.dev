@@ -41,6 +41,11 @@ button {
   color: inherit;
 }
 
+/* hidden always hides, even when a component sets display. */
+[hidden] {
+  display: none !important;
+}
+
 /*
  * A world's full-bleed background (§2.4), from the tokens of the nearest
  * [data-world] scope. Contact's grain is a separate <Paper> layer.

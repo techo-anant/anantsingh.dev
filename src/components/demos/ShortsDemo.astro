@@ -1,0 +1,174 @@
+---
+/**
+ * Shorts pipeline: a long video strip is scanned, three moments are picked and fly into a phone frame, each gets a tick (§8).
+ * Ported from the reference (Live.dc.html); a 560×420 scene that loops forever.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <span style="position: absolute; left: 20px; top: 8px; font-size: 11px; color: #8B949E;">
+    long-form video
+  </span>
+  <div style="position: absolute; left: 20px; top: 30px; width: 520px; height: 64px; box-sizing: border-box; border: 1px solid rgba(240,246,252,0.25); border-radius: 8px; background: repeating-linear-gradient(90deg, rgba(240,246,252,0.08) 0 38px, rgba(240,246,252,0.015) 38px 40px);"></div>
+  <div
+    class="da-seg"
+    style="position: absolute; left: 80px; top: 30px; width: 60px; height: 64px; box-sizing: border-box; border: 2px solid #5FED83; border-radius: 6px; animation-delay: .25s;"
+  ></div>
+  <div
+    class="da-seg"
+    style="position: absolute; left: 250px; top: 30px; width: 60px; height: 64px; box-sizing: border-box; border: 2px solid #5FED83; border-radius: 6px; animation-delay: .9s;"
+  ></div>
+  <div
+    class="da-seg"
+    style="position: absolute; left: 410px; top: 30px; width: 60px; height: 64px; box-sizing: border-box; border: 2px solid #5FED83; border-radius: 6px; animation-delay: 1.5s;"
+  ></div>
+  <div
+    class="da-blade"
+    style="position: absolute; top: 20px; height: 84px; width: 2px; background: #5FED83; box-shadow: 0 0 12px #5FED83;"
+  ></div>
+  <div style="position: absolute; left: 205px; top: 150px; width: 150px; height: 256px; box-sizing: border-box; border: 2px solid rgba(240,246,252,0.5); border-radius: 24px;">
+    <span style="position: absolute; left: 55px; top: 8px; width: 36px; height: 6px; border-radius: 3px; background: rgba(240,246,252,0.3);"></span>
+  </div>
+  <div
+    class="da-clip"
+    style="--dx: 156px; --dy: 168px; position: absolute; left: 83px; top: 32px; width: 54px; height: 96px; border-radius: 6px; border: 1px solid #5FED83; background: linear-gradient(180deg, #1F2A36, #10161D); animation-delay: 0s;"
+  >
+    <span
+      class="da-tick"
+      style="position: absolute; right: -9px; top: -9px; width: 20px; height: 20px; border-radius: 50%; background: #5FED83; color: #0D1117; font-size: 12px; display: flex; align-items: center; justify-content: center; animation-delay: 0s;"
+    >
+      ✓
+    </span>
+  </div>
+  <div
+    class="da-clip"
+    style="--dx: 0px; --dy: 176px; position: absolute; left: 253px; top: 32px; width: 54px; height: 96px; border-radius: 6px; border: 1px solid #5FED83; background: linear-gradient(180deg, #23303D, #10161D); animation-delay: .25s;"
+  >
+    <span
+      class="da-tick"
+      style="position: absolute; right: -9px; top: -9px; width: 20px; height: 20px; border-radius: 50%; background: #5FED83; color: #0D1117; font-size: 12px; display: flex; align-items: center; justify-content: center; animation-delay: .25s;"
+    >
+      ✓
+    </span>
+  </div>
+  <div
+    class="da-clip"
+    style="--dx: -146px; --dy: 184px; position: absolute; left: 413px; top: 32px; width: 54px; height: 96px; border-radius: 6px; border: 1px solid #5FED83; background: linear-gradient(180deg, #283646, #10161D); animation-delay: .5s;"
+  >
+    <span
+      class="da-tick"
+      style="position: absolute; right: -9px; top: -9px; width: 20px; height: 20px; border-radius: 50%; background: #5FED83; color: #0D1117; font-size: 12px; display: flex; align-items: center; justify-content: center; animation-delay: .5s;"
+    >
+      ✓
+    </span>
+  </div>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    font-family: var(--font-mono);
+    color: #f0f6fc;
+  }
+
+  @keyframes bladeSweep {
+    0% {
+      left: 20px;
+      opacity: 0;
+    }
+
+    3% {
+      opacity: 1;
+    }
+
+    30% {
+      left: 540px;
+      opacity: 1;
+    }
+
+    33%,
+    100% {
+      left: 540px;
+      opacity: 0;
+    }
+  }
+
+  .da-blade {
+    animation: bladeSweep 7s linear infinite;
+  }
+
+  @keyframes segPick {
+    0% {
+      opacity: 0;
+    }
+
+    5%,
+    58% {
+      opacity: 1;
+    }
+
+    66%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .da-seg {
+    animation: segPick 7s ease infinite;
+  }
+
+  @keyframes clipFly {
+    0%,
+    30% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.9);
+    }
+
+    35% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+
+    55%,
+    88% {
+      opacity: 1;
+      transform: translate(var(--dx), var(--dy)) scale(1);
+    }
+
+    96%,
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(1);
+    }
+  }
+
+  .da-clip {
+    animation: clipFly 7s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+  }
+
+  @keyframes tickPop {
+    0%,
+    52% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+
+    58%,
+    88% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .da-tick {
+    animation: tickPop 7s ease infinite;
+  }
+</style>
