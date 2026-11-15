@@ -5,17 +5,11 @@
  *
  *   0 Software   two columns of faint scrolling code
  *   1 AI         drifting nodes + links, travelling pulses, cursor tension
- *   2 Robotics   radar rings, crosshair, sweep, blips, a periodic "spoofed" ghost
+ *   2 Robotics   radar rings, crosshair, sweep, blips, a periodic ghost detection
  *   3 Accounting a grid of faint ledger numbers with pulsing ticks
  *   4 Contact    none
  */
 type Rand = () => number;
-
-/**
- * The Robotics ghost detection ("spoofed", crossed out). Kept as designed;
- * the Robotics framing is still under review (see the Robotics world PR).
- */
-export const SHOW_SPOOFED_GHOST = true;
 
 const CODE = [
   'def select_clips(video) -> list[Clip]:',
@@ -184,7 +178,7 @@ export class Ambient {
     });
   }
 
-  private robotics(a: number, { ctx, ox, oy, t, phone, reduced, mono }: AmbientFrame) {
+  private robotics(a: number, { ctx, ox, oy, t, phone, reduced }: AmbientFrame) {
     const rings = phone ? [60, 120, 180, 240] : [110, 220, 330, 440];
     const cross = phone ? 260 : 470,
       sweepR = phone ? 250 : 460,
@@ -229,7 +223,8 @@ export class Ambient {
       );
       ctx.fill();
     });
-    if (!reduced && SHOW_SPOOFED_GHOST) {
+    if (!reduced) {
+      // A ghost detection: flickers, gets crossed out, fades. No text label (§7.3).
       const cyc = Math.floor(t / 7),
         ph = (t % 7) / 7;
       if (ph > 0.15 && ph < 0.75) {
@@ -256,8 +251,6 @@ export class Ambient {
           ctx.moveTo(gx + 7, gy - 7);
           ctx.lineTo(gx - 7, gy + 7);
           ctx.stroke();
-          ctx.font = `11px ${mono}`;
-          ctx.fillText('spoofed', gx + 14, gy + 4);
         }
         ctx.fillStyle = '#FFC627';
         ctx.strokeStyle = '#FFC627';

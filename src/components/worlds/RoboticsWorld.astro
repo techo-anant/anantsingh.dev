@@ -1,0 +1,570 @@
+---
+/**
+ * Robotics world, "the field" (BUILD_PLAN §7.3): eyebrow, a highlighted
+ * headline and the research role. The object controls are idle and focus only
+ * (no gallery), with square controls: "▸ open the research" opens one panel
+ * with the RoverDemo, softened 2026-11-15. The research itself stays private.
+ * Colors come from [data-world="robotics"]. Behavior: ./solo.ts.
+ */
+import { getResearch } from '../../lib/content';
+import RoverDemo from '../demos/RoverDemo.astro';
+
+const role = await getResearch();
+const LINE = "It sees an obstacle. We study what happens when it's wrong.";
+---
+
+<div class="robotics">
+  <div class="col">
+    <p class="eyebrow fluid">
+      <span class="square" aria-hidden="true"></span>Robotics + Autonomy
+    </p>
+    <h2 class="title fluid">
+      Robots that see the world <mark class="doubt">and doubt it.</mark>
+    </h2>
+  </div>
+
+  {role && (
+    <div class="block">
+      <span class="dash" aria-hidden="true" />
+      <span class="note fluid" aria-hidden="true">
+        paper in progress…
+      </span>
+      <span class="node" aria-hidden="true" />
+      <div class="role">
+        <h3 class="role-title fluid">{role.title}</h3>
+        <p class="org fluid">{role.org}</p>
+        <p class="when fluid">
+          {role.period} · with {role.supervisor}
+        </p>
+        <ul class="tags" aria-label="Areas">
+          {role.tags.map((t) => (
+            <li class="tag fluid">{t}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )}
+
+  <div class="solo" data-solo="2">
+    <!-- idle -->
+    <div data-solo-idle>
+      <span class="ring" aria-hidden="true"></span>
+      <button
+        class="hit"
+        type="button"
+        aria-label="Open the research"
+        data-solo-open
+        tabindex="-1"
+      ></button>
+      <button class="hint fluid" type="button" data-solo-open data-solo-opener>
+        ▸ open the research
+      </button>
+    </div>
+
+    <!-- focus -->
+    <div class="focus" data-solo-panel role="group" aria-label="The research" hidden>
+      <div class="panel-pos">
+        <div class="panel">
+          <div class="demo-box">
+            <div class="demo-scale">
+              <RoverDemo />
+            </div>
+          </div>
+          <p class="pline fluid">{LINE}</p>
+          <p class="tag-private fluid">private research · WASP Lab</p>
+        </div>
+      </div>
+      <button class="close fluid" type="button" data-solo-close>
+        close ×
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initSolos } from './solo';
+
+  initSolos();
+</script>
+
+<style>
+  /* Phone first (§7.3 phone, §7.6 sheet); desktop below. */
+  .robotics {
+    --line-soft: color-mix(in srgb, var(--ink) 30%, transparent);
+    --glass: color-mix(in srgb, var(--bg) 80%, transparent);
+    --secondary: var(--robotics-secondary);
+
+    position: absolute;
+    inset: 0;
+  }
+
+  .col {
+    position: absolute;
+    top: calc(84 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .eyebrow {
+    --fs: 13;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .square {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    background: var(--accent);
+  }
+
+  .title {
+    --fs: 40;
+
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .doubt {
+    padding: 0 8px;
+    background: var(--accent);
+    color: var(--bg);
+    box-decoration-break: clone;
+  }
+
+  /* The role (§7.3). Revealed after the section. */
+  .block {
+    position: absolute;
+    top: calc(556 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    padding-left: 30px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .block {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s ease 1.1s,
+      transform 0.7s ease 1.1s;
+  }
+
+  .dash,
+  .note,
+  .node {
+    position: absolute;
+  }
+
+  .dash {
+    top: -40px;
+    left: 7px;
+    width: 2px;
+    height: 34px;
+    background: repeating-linear-gradient(
+      180deg,
+      rgba(255, 198, 39, 0.75) 0 4px,
+      transparent 4px 9px
+    );
+  }
+
+  .note {
+    --fs: 10;
+
+    top: -36px;
+    left: 20px;
+    font-family: var(--font-mono);
+    color: var(--annotation);
+  }
+
+  .node {
+    top: 7px;
+    left: 1px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    animation: rbNode 2.4s ease-in-out infinite;
+  }
+
+  .role {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .role-title {
+    --fs: 28;
+
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .org {
+    --fs: 14;
+
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--secondary);
+  }
+
+  .when {
+    --fs: 11;
+
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 0 0;
+    list-style: none;
+  }
+
+  .tag,
+  .tag-private {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    border: 1px solid rgba(255, 198, 39, 0.45);
+  }
+
+  .tag {
+    --fs: 10;
+
+    padding: 3px 8px;
+  }
+
+  @keyframes rbNode {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 198, 39, 0.55);
+    }
+
+    50% {
+      box-shadow: 0 0 0 9px rgba(255, 198, 39, 0);
+    }
+  }
+
+  /* Object controls: square, anchored to the object via --ox, --oy, --k. */
+  .solo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .solo button {
+    pointer-events: auto;
+  }
+
+  .ring,
+  .hit {
+    position: absolute;
+  }
+
+  .ring {
+    --d: calc(260px * var(--k, 1));
+
+    top: calc(var(--oy) - var(--d) / 2);
+    left: calc(var(--ox) - var(--d) / 2);
+    width: var(--d);
+    height: var(--d);
+    border: 1px dashed rgba(255, 198, 39, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ringPulse 3.2s ease-in-out infinite;
+  }
+
+  .hit {
+    --d: calc(300px * var(--k, 1));
+
+    top: calc(var(--oy) - var(--d) / 2);
+    left: calc(var(--ox) - var(--d) / 2);
+    width: var(--d);
+    height: var(--d);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .hint,
+  .close {
+    --fs: 12;
+
+    position: absolute;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+  }
+
+  .hint {
+    top: calc(var(--oy) + 136px * var(--k, 1));
+    right: 16px;
+    padding: 0 8px;
+    border: none;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    color: var(--accent);
+  }
+
+  .hint:hover {
+    color: var(--hint-hover);
+  }
+
+  /* Square close (§7.3). */
+  .close {
+    z-index: 3;
+    top: calc(72 / 844 * 100cqh);
+    right: 16px;
+    padding: 0 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: 0;
+    background: var(--glass);
+    color: var(--ink);
+  }
+
+  /* Focus: phone = opaque sheet over the section (§7.6). */
+  .focus {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    padding: calc(132 / 844 * 100cqh) 27px 0;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg);
+    pointer-events: auto;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .demo-box {
+    position: relative;
+    width: calc(336px * var(--k, 1));
+    height: calc(252px * var(--k, 1));
+    flex: none;
+  }
+
+  .demo-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(calc(0.6 * var(--k, 1)));
+    transform-origin: 0 0;
+  }
+
+  .pline {
+    --fs: 17;
+
+    font-family: var(--font-sans);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--ink);
+  }
+
+  .tag-private {
+    --fs: 11;
+
+    display: inline-flex;
+    min-height: 40px;
+    padding: 0 16px;
+    align-items: center;
+  }
+
+  /* Focus rings in the world's accent (§12). */
+  .hint:focus-visible,
+  .close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* Desktop (§7.3, §4.4). Keep in sync with src/lib/layout.ts. */
+  @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+    .col {
+      top: calc(168 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(440px, 44.4cqw, 760px);
+      gap: 20px;
+    }
+
+    .eyebrow {
+      --fs: 16;
+
+      gap: 10px;
+    }
+
+    .square {
+      width: 10px;
+      height: 10px;
+    }
+
+    .title {
+      --fs: 68;
+
+      line-height: 0.9;
+    }
+
+    .doubt {
+      padding: 0 10px;
+    }
+
+    .block {
+      top: calc(500 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(440px, 44.4cqw, 760px);
+      padding-left: 34px;
+    }
+
+    .dash {
+      top: -46px;
+      left: 9px;
+      height: 40px;
+    }
+
+    .note {
+      --fs: 11;
+
+      top: -44px;
+      left: 24px;
+    }
+
+    .node {
+      top: 8px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+    }
+
+    .role {
+      gap: 6px;
+    }
+
+    .role-title {
+      --fs: 34;
+    }
+
+    .org {
+      --fs: 17;
+    }
+
+    .when {
+      --fs: 12;
+    }
+
+    .tags {
+      padding-top: 8px;
+    }
+
+    .tag {
+      --fs: 11;
+
+      padding: 3px 9px;
+    }
+
+    .ring {
+      --d: calc(420px * var(--k, 1));
+    }
+
+    .hit {
+      --d: calc(460px * var(--k, 1));
+    }
+
+    /* The shared 240px hint row (decision 6a). */
+    .hint {
+      --fs: 13;
+
+      top: calc(var(--oy) + 252px * var(--k, 1));
+      right: auto;
+      left: calc(var(--ox) - 120px * var(--k, 1));
+      width: calc(240px * var(--k, 1));
+      padding: 0;
+    }
+
+    .close {
+      top: calc(112 / 900 * 100cqh);
+      right: auto;
+      left: calc(var(--ox) + 218px * var(--k, 1));
+      padding: 0 16px;
+    }
+
+    /* Desktop focus: a 640×640 panel that flies in from the object. */
+    .focus {
+      padding: 0;
+      background: none;
+      pointer-events: none;
+      animation: none;
+    }
+
+    .focus .close {
+      pointer-events: auto;
+    }
+
+    .panel-pos {
+      position: absolute;
+      top: calc(var(--oy) - 314px * var(--k, 1));
+      left: calc(var(--ox) - 322px * var(--k, 1));
+      width: 640px;
+      height: 640px;
+      transform: scale(var(--k, 1));
+      transform-origin: 0 0;
+    }
+
+    .panel {
+      width: 640px;
+      height: 640px;
+      transform-origin: 322px 314px;
+      animation: flyIn 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .demo-box {
+      width: 560px;
+      height: 420px;
+    }
+
+    .demo-scale {
+      transform: none;
+    }
+
+    /* Inside the scaled panel, sizes are artboard px (the panel scales them). */
+    .pline {
+      font-size: 20px;
+      animation: fadeUp 0.5s ease 0.5s both;
+    }
+
+    .tag-private {
+      min-height: 44px;
+      padding: 0 18px;
+      font-size: 12px;
+      animation: fadeUp 0.5s ease 0.7s both;
+    }
+  }
+</style>

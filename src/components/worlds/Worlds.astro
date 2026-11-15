@@ -17,6 +17,7 @@ import { HINTS, ORDER_KEY, WORLDS } from '../../lib/worlds';
 const ids = WORLDS.map((w) => w.id);
 import Paper from '../paper/Paper.astro';
 import AIWorld from './AIWorld.astro';
+import RoboticsWorld from './RoboticsWorld.astro';
 import SoftwareWorld from './SoftwareWorld.astro';
 ---
 
@@ -44,6 +45,7 @@ import SoftwareWorld from './SoftwareWorld.astro';
         <div class="world-content">
           {w.id === 'software' && <SoftwareWorld />}
           {w.id === 'ai' && <AIWorld />}
+          {w.id === 'robotics' && <RoboticsWorld />}
         </div>
       </section>
     ))}
