@@ -1,0 +1,384 @@
+---
+/**
+ * Token test page (BUILD_PLAN §14, PR 1): every world's palette and type,
+ * the cover palette and paper, and a specimen of each font.
+ * Not linked from the site and marked noindex.
+ * TODO: remove or restrict to dev before the repo/site goes public.
+ */
+import Paper from '../../components/paper/Paper.astro';
+import Base from '../../layouts/Base.astro';
+
+const worlds = [
+  {
+    id: 'software',
+    name: 'Software',
+    caption: 'the terminal',
+    eyebrow: '~/anant/software $ ls',
+    headline: 'Software that ships',
+    extras: ['secondary', 'annotation', 'hint-hover'],
+  },
+  {
+    id: 'ai',
+    name: 'AI',
+    caption: 'the network',
+    eyebrow: 'Artificial Intelligence',
+    headline: 'Learning machines, from scratch.',
+    extras: ['annotation', 'hint-hover'],
+  },
+  {
+    id: 'robotics',
+    name: 'Robotics',
+    caption: 'the field',
+    eyebrow: 'Robotics + Autonomy',
+    headline: 'Robots that see the world and doubt it.',
+    extras: ['secondary', 'annotation', 'error', 'hint-hover'],
+  },
+  {
+    id: 'accounting',
+    name: 'Accounting',
+    caption: 'the ledger',
+    eyebrow: 'Accounting and audit',
+    headline: 'Where the numbers have to tie.',
+    extras: ['success', 'error', 'margin', 'body', 'annotation', 'hint-hover'],
+  },
+  {
+    id: 'contact',
+    name: 'Contact',
+    caption: 'thanks for reading',
+    eyebrow: 'Contact',
+    headline: 'The next page is unwritten.',
+    extras: ['body'],
+  },
+] as const;
+
+const core = ['bg', 'ink', 'muted', 'accent'] as const;
+
+const fonts = [
+  { token: '--font-serif-cover', family: 'Instrument Serif', faces: ['400', '400 italic'] },
+  { token: '--font-hand', family: 'La Belle Aurore', faces: ['400'] },
+  { token: '--font-sans', family: 'Geist', faces: ['300', '400', '500'] },
+  { token: '--font-mono', family: 'Geist Mono', faces: ['400', '500'] },
+  { token: '--font-condensed', family: 'Barlow Condensed', faces: ['500', '600', '700'] },
+  { token: '--font-ledger', family: 'Libre Caslon Text', faces: ['400', '400 italic'] },
+] as const;
+
+const sample = 'An Ongoing Autobiography · 0123456789';
+---
+
+<Base title="Tokens · anantsingh.dev" noindex>
+  <main class="page">
+    <section class="cover" aria-labelledby="cover-title">
+      <Paper id="tokens-cover" />
+      <div class="cover-text">
+        <h1 id="cover-title">
+          An <em>Ongoing</em> Autobiography
+        </h1>
+        <p class="byline">
+          <em>by</em> Anant Kumar Singh
+        </p>
+        <p class="hand">a pipeline that watches videos while I sleep</p>
+        <p class="cover-hint">Click anywhere to turn the page</p>
+      </div>
+      <ul class="swatches" aria-label="Cover palette">
+        {['paper', 'ink', 'byline', 'hand', 'accent', 'muted'].map((name) => (
+          <li>
+            <span class="chip" style={`background: var(--cover-${name})`} />
+            <code>--cover-{name}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {worlds.map((w) => (
+      <section
+        class:list={['world', `world-${w.id}`]}
+        data-world={w.id}
+        aria-labelledby={`h-${w.id}`}
+      >
+        {w.id === 'contact' && <Paper id="tokens-contact" />}
+        <div class="world-inner">
+          <p class="brand">Anant Kumar Singh</p>
+          <p class="eyebrow">{w.eyebrow}</p>
+          <h2 id={`h-${w.id}`}>{w.headline}</h2>
+          <p class="muted">
+            {w.name} · <span class="accent">accent</span> · {w.caption}
+          </p>
+          <ul class="swatches" aria-label={`${w.name} palette`}>
+            {[...core, ...w.extras].map((name) => (
+              <li>
+                <span class="chip" style={`background: var(--${w.id}-${name})`} />
+                <code>
+                  --{w.id}-{name}
+                </code>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))}
+
+    <section class="specimens" aria-labelledby="fonts-title">
+      <h2 id="fonts-title">Fonts</h2>
+      {fonts.map((f) => (
+        <div class="specimen">
+          <p class="specimen-label">
+            <code>{f.token}</code> · {f.family}
+          </p>
+          {f.faces.map((face) => {
+            const [weight, style = 'normal'] = face.split(' ');
+            return (
+              <p
+                class="specimen-line"
+                style={`font-family: var(${f.token}); font-weight: ${weight}; font-style: ${style}`}
+              >
+                <span class="face">{face}</span> {sample}
+              </p>
+            );
+          })}
+        </div>
+      ))}
+    </section>
+  </main>
+</Base>
+
+<style>
+  .page {
+    display: grid;
+  }
+
+  /* Cover */
+  .cover {
+    position: relative;
+    display: grid;
+    gap: 32px;
+    padding: 72px 24px;
+    overflow: hidden;
+    background: var(--cover-paper);
+  }
+
+  .cover-text {
+    position: relative;
+    display: grid;
+    gap: 22px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .cover h1 {
+    font-family: var(--font-serif-cover);
+    font-weight: 400;
+    font-size: clamp(3rem, 7.5vw, 6.75rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--cover-ink);
+  }
+
+  .cover h1 em {
+    color: var(--cover-accent);
+  }
+
+  .byline {
+    font-family: var(--font-serif-cover);
+    font-size: clamp(1.375rem, 2.1vw, 1.875rem);
+    line-height: 1.1;
+    color: var(--cover-byline);
+  }
+
+  .hand {
+    font-family: var(--font-hand);
+    font-size: 30px;
+    color: var(--cover-hand);
+  }
+
+  .cover-hint {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cover-muted);
+  }
+
+  /* Worlds */
+  .world {
+    position: relative;
+    padding: 64px 24px;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-world);
+  }
+
+  .world-software {
+    background-image: var(--software-bg-image);
+  }
+
+  .world-ai {
+    background-image: var(--ai-bg-image);
+  }
+
+  .world-robotics {
+    background-image: var(--robotics-bg-image);
+    background-size: var(--robotics-bg-size);
+  }
+
+  .world-robotics::before,
+  .world-robotics::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: var(--robotics-hazard-height);
+    background: var(--robotics-hazard);
+    content: '';
+  }
+
+  .world-robotics::before {
+    top: 0;
+  }
+
+  .world-robotics::after {
+    bottom: 0;
+  }
+
+  .world-accounting {
+    background-image:
+      linear-gradient(var(--accounting-margin), var(--accounting-margin)),
+      linear-gradient(var(--accounting-margin), var(--accounting-margin)),
+      var(--accounting-bg-image);
+    background-position:
+      var(--accounting-margin-1) 0,
+      var(--accounting-margin-2) 0,
+      0 0;
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-size:
+      1px 100%,
+      1px 100%,
+      auto;
+  }
+
+  .world-inner {
+    position: relative;
+    display: grid;
+    gap: 16px;
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .brand {
+    font-family: var(--brand-font);
+    font-size: var(--brand-size);
+    font-weight: var(--brand-weight);
+    letter-spacing: var(--brand-tracking);
+    text-transform: var(--brand-transform);
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* §7.1: the Software eyebrow is a prompt, not a label. */
+  .world-software .eyebrow {
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .world h2 {
+    font-size: clamp(2.25rem, 5vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .world-robotics h2 {
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .world-ai h2 {
+    font-weight: 300;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  /* Swatches */
+  .swatches {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    justify-content: center;
+  }
+
+  .world .swatches {
+    justify-content: start;
+  }
+
+  .swatches li {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .chip {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 4px;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  /* Specimens */
+  .specimens {
+    display: grid;
+    gap: 32px;
+    padding: 64px 24px;
+    background: #fff;
+    color: #111;
+  }
+
+  .specimens > h2 {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .specimen {
+    display: grid;
+    gap: 6px;
+  }
+
+  .specimen-label {
+    color: #555;
+  }
+
+  .specimen-line {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1.3;
+  }
+
+  .face {
+    display: inline-block;
+    min-width: 7ch;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    color: #777;
+  }
+</style>

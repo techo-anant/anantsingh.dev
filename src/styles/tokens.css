@@ -1,0 +1,177 @@
+/*
+ * Design tokens, BUILD_PLAN §2.
+ *
+ * Font families (--font-serif-cover, --font-hand, --font-sans, --font-mono,
+ * --font-condensed, --font-ledger) are defined by Astro's Fonts API
+ * (astro.config.mjs) and loaded in layouts/Base.astro.
+ *
+ * Values are kept in the same notation as the spec so they can be checked
+ * against it line by line. Phone values are the default; the desktop layout
+ * overrides them inside the desktop media query (BUILD_PLAN §4.1, plus
+ * min-height so landscape phones keep the phone layout).
+ */
+
+:root {
+  /* §2.2 Cover palette */
+  --cover-paper: #eee8da;
+  --cover-ink: #1f1a15;
+  --cover-byline: #3a332b;
+  --cover-hand: #2a241d;
+  --cover-accent: #2f5d46;
+  --cover-muted: #5a5045;
+  --cover-lamp: radial-gradient(circle, rgba(255, 248, 226, 0.55), transparent 70%);
+  --cover-vignette: radial-gradient(
+    ellipse 75% 70% at 50% 46%,
+    transparent 55%,
+    rgba(92, 72, 44, 0.16) 100%
+  );
+
+  /* §2.3 World palettes */
+  --software-bg: #0d1117;
+  --software-ink: #f0f6fc;
+  --software-muted: #8b949e;
+  --software-accent: #5fed83;
+  --software-secondary: #c9d1d9;
+  --software-annotation: #6e7681;
+  --software-hint-hover: #9df7b7;
+
+  --ai-bg: #0a0d14;
+  --ai-ink: #eceff4;
+  --ai-muted: #9aa4b2;
+  --ai-accent: #57e4e9;
+  --ai-annotation: #6e7887;
+  --ai-hint-hover: #a6f3f5;
+
+  --robotics-bg: #17181a;
+  --robotics-ink: #f2f0ea;
+  --robotics-muted: #a8a6a0;
+  --robotics-accent: #ffc627;
+  --robotics-secondary: #c8c6c0;
+  --robotics-annotation: #8c8a85;
+  --robotics-error: #ff5a4e;
+  --robotics-hint-hover: #ffe08a;
+
+  --accounting-bg: #f7f8fa;
+  --accounting-ink: #0b1220;
+  --accounting-muted: #4a5468;
+  --accounting-accent: #00338d;
+  --accounting-success: #3d7a12;
+  --accounting-error: #c8102e;
+  --accounting-margin: rgba(200, 16, 46, 0.35);
+  --accounting-body: #3b4556;
+  --accounting-annotation: #6b7385;
+  --accounting-hint-hover: #1a57c4;
+
+  --contact-bg: #eee8da;
+  --contact-ink: #1f1a15;
+  --contact-muted: #5a5045;
+  --contact-accent: #2f5d46;
+  --contact-body: #3a332b;
+
+  /* §2.4 World backgrounds (layered on top of each world's bg color) */
+  --software-bg-image: repeating-linear-gradient(
+    0deg,
+    rgba(240, 246, 252, 0.03) 0 1px,
+    transparent 1px 4px
+  );
+  --ai-glow-at: 50% 42%;
+  --ai-bg-image: radial-gradient(
+    ellipse 60% 70% at var(--ai-glow-at),
+    rgba(87, 228, 233, 0.09),
+    transparent 70%
+  );
+  --robotics-bg-image:
+    linear-gradient(rgba(255, 198, 39, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 198, 39, 0.06) 1px, transparent 1px);
+  --robotics-bg-size: 40px 40px;
+  --robotics-hazard: repeating-linear-gradient(45deg, #ffc627 0 14px, #17181a 14px 28px);
+  --robotics-hazard-height: 8px;
+  --accounting-margin-1: 14px;
+  --accounting-margin-2: 18px;
+  --accounting-bg-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 35px,
+    rgba(0, 51, 141, 0.09) 35px 36px
+  );
+
+  /* Contact reuses the cover's paper, grain and vignette (§2.4). */
+}
+
+/* Desktop layout (§4.1 + min-height fix). */
+@media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+  :root {
+    --ai-glow-at: 71% 50%;
+    --accounting-margin-1: 62px;
+    --accounting-margin-2: 67px;
+  }
+}
+
+/*
+ * Per-world scope. Put data-world="<id>" on a world's section (or any
+ * wrapper) to get generic tokens: --bg, --ink, --muted, --accent, the
+ * section font (--font-world, §7) and the header brand style (§2.3).
+ */
+[data-world='software'] {
+  --bg: var(--software-bg);
+  --ink: var(--software-ink);
+  --muted: var(--software-muted);
+  --accent: var(--software-accent);
+  --font-world: var(--font-mono);
+  --brand-font: var(--font-mono);
+  --brand-size: 17px;
+  --brand-weight: 400;
+  --brand-transform: none;
+  --brand-tracking: normal;
+}
+
+[data-world='ai'] {
+  --bg: var(--ai-bg);
+  --ink: var(--ai-ink);
+  --muted: var(--ai-muted);
+  --accent: var(--ai-accent);
+  --font-world: var(--font-sans);
+  --brand-font: var(--font-sans);
+  --brand-size: 17px;
+  --brand-weight: 400;
+  --brand-transform: none;
+  --brand-tracking: normal;
+}
+
+[data-world='robotics'] {
+  --bg: var(--robotics-bg);
+  --ink: var(--robotics-ink);
+  --muted: var(--robotics-muted);
+  --accent: var(--robotics-accent);
+  --font-world: var(--font-condensed);
+  --brand-font: var(--font-condensed);
+  --brand-size: 26px;
+  --brand-weight: 700;
+  --brand-transform: uppercase;
+  --brand-tracking: 0.02em;
+}
+
+[data-world='accounting'] {
+  --bg: var(--accounting-bg);
+  --ink: var(--accounting-ink);
+  --muted: var(--accounting-muted);
+  --accent: var(--accounting-accent);
+  --font-world: var(--font-ledger);
+  --brand-font: var(--font-ledger);
+  --brand-size: 20px;
+  --brand-weight: 400;
+  --brand-transform: none;
+  --brand-tracking: normal;
+}
+
+[data-world='contact'] {
+  --bg: var(--contact-bg);
+  --ink: var(--contact-ink);
+  --muted: var(--contact-muted);
+  --accent: var(--contact-accent);
+  --font-world: var(--font-serif-cover);
+  --brand-font: var(--font-serif-cover);
+  --brand-size: 24px;
+  --brand-weight: 400;
+  --brand-transform: none;
+  --brand-tracking: normal;
+}
