@@ -1,0 +1,7 @@
+world: software
+slot: 0
+name: Shorts pipeline
+line: Long video in. Short clips out. A human says yes.
+cta: details ↗
+href: '#shorts-pipeline' # TODO(content): project page, repo, or remove the button (§15)
+demo: ShortsDemo

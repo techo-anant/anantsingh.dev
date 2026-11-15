@@ -1,0 +1,7 @@
+world: software
+slot: 1
+name: Thumbnails
+line: A sentence in. A thumbnail out.
+cta: details ↗
+href: '#thumbnails' # TODO(content): project page, repo, or remove the button (§15)
+demo: ThumbnailDemo

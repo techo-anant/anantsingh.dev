@@ -1,0 +1,8 @@
+world: ai
+slot: 0
+name: DANCE · ICCV 2025
+line: No schedule. It explores first, then refines, on its own.
+cta: read the paper ↗
+# TODO: MemVis was non-archival (not on CVF). Self-host the PDF or link arXiv later.
+href: https://drive.google.com/file/d/1thTxyqM252SJnCiXEPl4evIjhn_JS4Fn/view?usp=sharing
+demo: DanceDemo
