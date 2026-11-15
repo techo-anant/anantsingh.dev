@@ -22,6 +22,8 @@ export interface WorldsState {
   /** Phone menu open. */
   menu: boolean;
   layout: Layout;
+  /** The cover has finished its transition (or was skipped). Set by cover.ts. */
+  coverDone: boolean;
 }
 
 export const worlds = createStore<WorldsState>({
@@ -29,6 +31,8 @@ export const worlds = createStore<WorldsState>({
   active: 0,
   menu: false,
   layout: 'phone',
+  // True unless a cover is on the page; the cover sets it on init.
+  coverDone: true,
 });
 
 export function initWorlds(): void {
@@ -99,6 +103,8 @@ export function initWorlds(): void {
   worlds.subscribe((s, prev) => {
     const world = WORLDS[s.active];
     root.dataset.world = world.id;
+    // Under the cover the worlds run, but are out of reach for keyboard and AT.
+    root.inert = !s.coverDone;
     root.toggleAttribute('data-entered', s.entered);
 
     layers.forEach((layer, k) =>
@@ -176,7 +182,8 @@ export function initWorlds(): void {
   };
 
   document.addEventListener('keydown', (event) => {
-    const { menu: menuOpen, active } = worlds.get();
+    const { menu: menuOpen, active, coverDone } = worlds.get();
+    if (!coverDone) return; // the cover handles keys while it is up
     if (event.key === 'Escape') {
       if (menuOpen) setMenu(false);
       return;
