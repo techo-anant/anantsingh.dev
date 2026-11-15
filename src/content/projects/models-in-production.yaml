@@ -1,7 +1,7 @@
 world: ai
 slot: 1
 name: Models in production
+meta: the Shorts pipeline · solo
 line: Three models, one pipeline.
-cta: details ↗
-href: '#shorts-pipeline' # TODO(content): project page, repo, or remove the button (§15)
+# No link: the CTA pill is hidden.
 demo: ModelsDemo

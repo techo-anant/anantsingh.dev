@@ -1,0 +1,8 @@
+world: software
+slot: 2
+name: Subscription API
+meta: REST API · JWT · MongoDB
+line: Auth, validation and data, behind one API.
+cta: see the repo ↗
+href: https://github.com/techo-anant/Subscription-tracker-api
+demo: ApiDemo

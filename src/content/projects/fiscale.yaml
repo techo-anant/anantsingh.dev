@@ -1,0 +1,9 @@
+world: software
+slot: 1
+name: Fiscale
+# TODO(content): name your part of the team of four here if you want (§15).
+meta: Winhacks 2026 · team of 4
+line: Taxes, OSAP and a budget, built for students.
+cta: see the repo ↗
+href: https://github.com/techo-anant/fiscale
+demo: FiscaleDemo
