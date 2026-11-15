@@ -2,7 +2,7 @@ world: ai
 slot: 1
 name: Models in production
 meta: the Shorts pipeline · solo
-line: Three models, one pipeline.
+line: Two models, three decisions, a human in the loop.
 cta: see the repo ↗
 href: https://github.com/techo-anant/shorts-automation
 demo: ModelsDemo
