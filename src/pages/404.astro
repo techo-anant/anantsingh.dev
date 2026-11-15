@@ -1,0 +1,79 @@
+---
+/**
+ * 404, in the cover's voice: a page of the autobiography that does not
+ * exist yet. Uses the cover palette, paper grain and type.
+ */
+import Paper from '../components/paper/Paper.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found · Anant Kumar Singh">
+  <main class="not-found">
+    <Paper id="not-found" />
+    <div class="content">
+      <h1>This page hasn’t been written yet.</h1>
+      <a class="back" href="/">
+        Back to the cover
+      </a>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .not-found {
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    padding: 24px;
+    overflow: hidden;
+    background: var(--cover-paper);
+    place-items: center;
+  }
+
+  .content {
+    position: relative;
+    display: grid;
+    gap: 36px;
+    justify-items: center;
+    padding-bottom: 10%;
+    text-align: center;
+  }
+
+  h1 {
+    max-width: 14ch;
+    font-family: var(--font-serif-cover);
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--cover-ink);
+    text-wrap: balance;
+  }
+
+  .back {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cover-muted);
+    text-decoration: underline;
+    text-decoration-color: var(--cover-accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
+    transition: color 0.3s ease;
+  }
+
+  .back:hover,
+  .back:focus-visible {
+    color: var(--cover-accent);
+  }
+
+  .back:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid var(--cover-accent);
+    outline-offset: 4px;
+  }
+</style>
