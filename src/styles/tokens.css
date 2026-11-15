@@ -80,10 +80,7 @@
     rgba(87, 228, 233, 0.09),
     transparent 70%
   );
-  --robotics-bg-image:
-    linear-gradient(rgba(255, 198, 39, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 198, 39, 0.06) 1px, transparent 1px);
-  --robotics-bg-size: 40px 40px;
+  --robotics-grid-line: rgba(255, 198, 39, 0.06);
   --robotics-hazard: repeating-linear-gradient(45deg, #ffc627 0 14px, #17181a 14px 28px);
   --robotics-hazard-height: 8px;
   --accounting-margin-1: 14px;
@@ -95,33 +92,55 @@
   );
 
   /* Contact reuses the cover's paper, grain and vignette (§2.4). */
+
+  /* §4.3 Particle object center; the background reveal grows from here. */
+  --object-at: 50% 41.7%;
+
+  /* §4.2 Left text column x. */
+  --col-x: 24px;
 }
 
-/* Desktop layout (§4.1 + min-height fix). */
+/* Desktop layout (§4.1 + min-height fix). Keep in sync with src/lib/layout.ts. */
 @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
   :root {
     --ai-glow-at: 71% 50%;
     --accounting-margin-1: 62px;
     --accounting-margin-2: 67px;
+    --object-at: 71% 48%;
+    --col-x: clamp(48px, 6.667vw, 160px);
   }
 }
 
 /*
  * Per-world scope. Put data-world="<id>" on a world's section (or any
- * wrapper) to get generic tokens: --bg, --ink, --muted, --accent, the
- * section font (--font-world, §7) and the header brand style (§2.3).
+ * wrapper) to get generic tokens:
+ *   --bg, --ink, --muted, --accent, --rule (thin dividers)
+ *   --bg-image / --bg-size / --bg-position / --bg-repeat (the §2.4 background
+ *     as layers; use with the .world-bg class in global.css)
+ *   --font-world (section font, §7)
+ *   --brand-* (header name, §2.3 and §6.6); sizes are unitless px numbers for
+ *     the .fluid utility: --brand-size on phone, --brand-size-lg on desktop
+ *   --menu-* (phone menu items, §6.6)
  */
 [data-world='software'] {
   --bg: var(--software-bg);
   --ink: var(--software-ink);
   --muted: var(--software-muted);
   --accent: var(--software-accent);
+  --rule: rgba(255, 255, 255, 0.12);
+  --bg-image: var(--software-bg-image);
+  --bg-size: auto;
+  --bg-position: 0 0;
+  --bg-repeat: repeat;
   --font-world: var(--font-mono);
   --brand-font: var(--font-mono);
-  --brand-size: 17px;
+  --brand-size: 14;
+  --brand-size-lg: 17;
   --brand-weight: 400;
   --brand-transform: none;
   --brand-tracking: normal;
+  --menu-size: 34;
+  --menu-weight: 400;
 }
 
 [data-world='ai'] {
@@ -129,12 +148,20 @@
   --ink: var(--ai-ink);
   --muted: var(--ai-muted);
   --accent: var(--ai-accent);
+  --rule: rgba(255, 255, 255, 0.12);
+  --bg-image: var(--ai-bg-image);
+  --bg-size: auto;
+  --bg-position: 0 0;
+  --bg-repeat: no-repeat;
   --font-world: var(--font-sans);
   --brand-font: var(--font-sans);
-  --brand-size: 17px;
+  --brand-size: 14;
+  --brand-size-lg: 17;
   --brand-weight: 400;
   --brand-transform: none;
   --brand-tracking: normal;
+  --menu-size: 34;
+  --menu-weight: 400;
 }
 
 [data-world='robotics'] {
@@ -142,12 +169,24 @@
   --ink: var(--robotics-ink);
   --muted: var(--robotics-muted);
   --accent: var(--robotics-accent);
+  --rule: rgba(255, 255, 255, 0.12);
+  --bg-image:
+    var(--robotics-hazard), var(--robotics-hazard),
+    linear-gradient(var(--robotics-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--robotics-grid-line) 1px, transparent 1px);
+  --bg-size:
+    100% var(--robotics-hazard-height), 100% var(--robotics-hazard-height), 40px 40px, 40px 40px;
+  --bg-position: 0 0, 0 100%, 0 0, 0 0;
+  --bg-repeat: no-repeat, no-repeat, repeat, repeat;
   --font-world: var(--font-condensed);
   --brand-font: var(--font-condensed);
-  --brand-size: 26px;
+  --brand-size: 20;
+  --brand-size-lg: 26;
   --brand-weight: 700;
   --brand-transform: uppercase;
   --brand-tracking: 0.02em;
+  --menu-size: 40;
+  --menu-weight: 700;
 }
 
 [data-world='accounting'] {
@@ -155,12 +194,22 @@
   --ink: var(--accounting-ink);
   --muted: var(--accounting-muted);
   --accent: var(--accounting-accent);
+  --rule: rgba(0, 0, 0, 0.12);
+  --bg-image:
+    linear-gradient(var(--accounting-margin), var(--accounting-margin)),
+    linear-gradient(var(--accounting-margin), var(--accounting-margin)), var(--accounting-bg-image);
+  --bg-size: 1px 100%, 1px 100%, auto;
+  --bg-position: var(--accounting-margin-1) 0, var(--accounting-margin-2) 0, 0 0;
+  --bg-repeat: no-repeat, no-repeat, repeat;
   --font-world: var(--font-ledger);
   --brand-font: var(--font-ledger);
-  --brand-size: 20px;
+  --brand-size: 16;
+  --brand-size-lg: 20;
   --brand-weight: 400;
   --brand-transform: none;
   --brand-tracking: normal;
+  --menu-size: 34;
+  --menu-weight: 400;
 }
 
 [data-world='contact'] {
@@ -168,10 +217,18 @@
   --ink: var(--contact-ink);
   --muted: var(--contact-muted);
   --accent: var(--contact-accent);
+  --rule: rgba(0, 0, 0, 0.12);
+  --bg-image: var(--cover-vignette);
+  --bg-size: auto;
+  --bg-position: 0 0;
+  --bg-repeat: no-repeat;
   --font-world: var(--font-serif-cover);
   --brand-font: var(--font-serif-cover);
-  --brand-size: 24px;
+  --brand-size: 20;
+  --brand-size-lg: 24;
   --brand-weight: 400;
   --brand-transform: none;
   --brand-tracking: normal;
+  --menu-size: 34;
+  --menu-weight: 400;
 }

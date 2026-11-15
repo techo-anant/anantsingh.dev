@@ -91,13 +91,13 @@ const sample = 'An Ongoing Autobiography · 0123456789';
 
     {worlds.map((w) => (
       <section
-        class:list={['world', `world-${w.id}`]}
+        class:list={['world', 'world-bg', `world-${w.id}`]}
         data-world={w.id}
         aria-labelledby={`h-${w.id}`}
       >
-        {w.id === 'contact' && <Paper id="tokens-contact" />}
+        {w.id === 'contact' && <Paper id="tokens-contact" vignette={false} />}
         <div class="world-inner">
-          <p class="brand">Anant Kumar Singh</p>
+          <p class="brand fluid">Anant Kumar Singh</p>
           <p class="eyebrow">{w.eyebrow}</p>
           <h2 id={`h-${w.id}`}>{w.headline}</h2>
           <p class="muted">
@@ -203,56 +203,8 @@ const sample = 'An Ongoing Autobiography · 0123456789';
     position: relative;
     padding: 64px 24px;
     overflow: hidden;
-    background-color: var(--bg);
     color: var(--ink);
     font-family: var(--font-world);
-  }
-
-  .world-software {
-    background-image: var(--software-bg-image);
-  }
-
-  .world-ai {
-    background-image: var(--ai-bg-image);
-  }
-
-  .world-robotics {
-    background-image: var(--robotics-bg-image);
-    background-size: var(--robotics-bg-size);
-  }
-
-  .world-robotics::before,
-  .world-robotics::after {
-    position: absolute;
-    right: 0;
-    left: 0;
-    height: var(--robotics-hazard-height);
-    background: var(--robotics-hazard);
-    content: '';
-  }
-
-  .world-robotics::before {
-    top: 0;
-  }
-
-  .world-robotics::after {
-    bottom: 0;
-  }
-
-  .world-accounting {
-    background-image:
-      linear-gradient(var(--accounting-margin), var(--accounting-margin)),
-      linear-gradient(var(--accounting-margin), var(--accounting-margin)),
-      var(--accounting-bg-image);
-    background-position:
-      var(--accounting-margin-1) 0,
-      var(--accounting-margin-2) 0,
-      0 0;
-    background-repeat: no-repeat, no-repeat, repeat;
-    background-size:
-      1px 100%,
-      1px 100%,
-      auto;
   }
 
   .world-inner {
@@ -264,8 +216,9 @@ const sample = 'An Ongoing Autobiography · 0123456789';
   }
 
   .brand {
+    --fs: var(--brand-size-lg);
+
     font-family: var(--brand-font);
-    font-size: var(--brand-size);
     font-weight: var(--brand-weight);
     letter-spacing: var(--brand-tracking);
     text-transform: var(--brand-transform);

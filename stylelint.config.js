@@ -10,5 +10,7 @@ export default {
     'alpha-value-notation': null,
     // Blank lines separate token groups (cover, each world, backgrounds).
     'custom-property-empty-line-before': null,
+    // Keyframe names match the reference (fadeUp, ringPulse, ...) per BUILD_PLAN §9.
+    'keyframes-name-pattern': null,
   },
 };

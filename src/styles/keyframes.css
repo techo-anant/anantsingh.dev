@@ -1,0 +1,16 @@
+/*
+ * Shared keyframes (BUILD_PLAN §9). Names match the reference so later PRs can
+ * port their rules unchanged. Each world PR adds the ones it uses.
+ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

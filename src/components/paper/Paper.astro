@@ -6,9 +6,11 @@
 interface Props {
   /** Unique filter id, needed when more than one Paper is on the page. */
   id: string;
+  /** Include the vignette (off when the parent already paints it). */
+  vignette?: boolean;
 }
 
-const { id } = Astro.props;
+const { id, vignette = true } = Astro.props;
 const filterId = `grain-${id}`;
 ---
 
@@ -25,7 +27,7 @@ const filterId = `grain-${id}`;
     </filter>
     <rect width="100%" height="100%" filter={`url(#${filterId})`}></rect>
   </svg>
-  <div class="vignette"></div>
+  {vignette && <div class="vignette" />}
 </div>
 
 <style>

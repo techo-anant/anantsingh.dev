@@ -1,9 +1,10 @@
 ---
+import Worlds from '../components/worlds/Worlds.astro';
 import Base from '../layouts/Base.astro';
 ---
 
 <Base>
-  <main>
-    <h1>Anant Kumar Singh</h1>
-  </main>
+  <!-- The cover (PR 10) will carry the visible h1 (§13). -->
+  <h1 class="sr-only">Anant Kumar Singh · An Ongoing Autobiography</h1>
+  <Worlds />
 </Base>
