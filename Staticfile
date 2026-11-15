@@ -1,0 +1,4 @@
+# Railpack (Railway) static serving config.
+# This is a multi-page site, not a SPA: unknown paths must return 404 and
+# serve dist/404.html instead of falling back to index.html.
+index_fallback: false
