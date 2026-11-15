@@ -1,0 +1,7 @@
+world: software
+slot: 2
+name: yb_rdkx5_motion
+line: Small moves, composed into paths a robot can follow.
+cta: details ↗
+href: '#yb-rdkx5-motion' # TODO(content): project page, repo, or remove the button (§15)
+demo: MotionDemo
