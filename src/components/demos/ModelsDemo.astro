@@ -1,0 +1,566 @@
+---
+/**
+ * Models in production (§8): the real shorts-automation flow. Two models,
+ * three decisions, a human in the loop:
+ * 1. Gemini 2.5 Flash finds the facecam and you set the crop,
+ * 2. Pegasus 1.5 describes every 15 s,
+ * 3. Gemini 2.5 Flash picks the clips and you approve.
+ * Ported from the handoff (AI_WORLD_CHANGES.md); a 560×420 scene on a 7s loop.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <span style="position: absolute; left: 20px; top: 10px; font-size: 11px; color: #9AA4B2;">
+    Gemini 2.5 Flash · finds the facecam · you set the crop
+  </span>
+  <span
+    class="mg-frame"
+    style="position: absolute; left: 20px; top: 32px; width: 80px; height: 45px; border-radius: 4px; background: linear-gradient(160deg, #182131, #22304A); border: 1px solid rgba(236,239,244,0.16); animation-delay: 0.00s;"
+  >
+    <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 13px; border-radius: 2px; background: #3A4456;"></span>
+    <span
+      class="mg-box"
+      style="position: absolute; left: 0; top: 0; width: 30px; height: 22px; border: 1.5px dashed #57E4E9; border-radius: 3px; box-sizing: border-box; animation-delay: 0.00s;"
+    ></span>
+    <span
+      class="mg-fix"
+      style="position: absolute; left: 3px; top: 3px; width: 20px; height: 15px; border: 1.5px solid #57E4E9; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(87,228,233,0.6);"
+    ></span>
+  </span>
+  <span
+    class="mg-frame"
+    style="position: absolute; left: 112px; top: 32px; width: 80px; height: 45px; border-radius: 4px; background: linear-gradient(160deg, #182131, #22304A); border: 1px solid rgba(236,239,244,0.16); animation-delay: 0.12s;"
+  >
+    <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 13px; border-radius: 2px; background: #3A4456;"></span>
+    <span
+      class="mg-box"
+      style="position: absolute; left: 0; top: 0; width: 30px; height: 22px; border: 1.5px dashed #57E4E9; border-radius: 3px; box-sizing: border-box; animation-delay: 0.12s;"
+    ></span>
+    <span
+      class="mg-fix"
+      style="position: absolute; left: 3px; top: 3px; width: 20px; height: 15px; border: 1.5px solid #57E4E9; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(87,228,233,0.6);"
+    ></span>
+  </span>
+  <span
+    class="mg-frame"
+    style="position: absolute; left: 204px; top: 32px; width: 80px; height: 45px; border-radius: 4px; background: linear-gradient(160deg, #182131, #22304A); border: 1px solid rgba(236,239,244,0.16); animation-delay: 0.24s;"
+  >
+    <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 13px; border-radius: 2px; background: #3A4456;"></span>
+    <span
+      class="mg-box"
+      style="position: absolute; left: 0; top: 0; width: 30px; height: 22px; border: 1.5px dashed #57E4E9; border-radius: 3px; box-sizing: border-box; animation-delay: 0.24s;"
+    ></span>
+    <span
+      class="mg-fix"
+      style="position: absolute; left: 3px; top: 3px; width: 20px; height: 15px; border: 1.5px solid #57E4E9; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(87,228,233,0.6);"
+    ></span>
+  </span>
+  <span
+    class="mg-frame"
+    style="position: absolute; left: 296px; top: 32px; width: 80px; height: 45px; border-radius: 4px; background: linear-gradient(160deg, #182131, #22304A); border: 1px solid rgba(236,239,244,0.16); animation-delay: 0.36s;"
+  >
+    <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 13px; border-radius: 2px; background: #3A4456;"></span>
+    <span
+      class="mg-box"
+      style="position: absolute; left: 0; top: 0; width: 30px; height: 22px; border: 1.5px dashed #57E4E9; border-radius: 3px; box-sizing: border-box; animation-delay: 0.36s;"
+    ></span>
+    <span
+      class="mg-fix"
+      style="position: absolute; left: 3px; top: 3px; width: 20px; height: 15px; border: 1.5px solid #57E4E9; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(87,228,233,0.6);"
+    ></span>
+  </span>
+  <span
+    class="mg-frame"
+    style="position: absolute; left: 388px; top: 32px; width: 80px; height: 45px; border-radius: 4px; background: linear-gradient(160deg, #182131, #22304A); border: 1px solid rgba(236,239,244,0.16); animation-delay: 0.48s;"
+  >
+    <span style="position: absolute; left: 4px; top: 4px; width: 18px; height: 13px; border-radius: 2px; background: #3A4456;"></span>
+    <span
+      class="mg-box"
+      style="position: absolute; left: 0; top: 0; width: 30px; height: 22px; border: 1.5px dashed #57E4E9; border-radius: 3px; box-sizing: border-box; animation-delay: 0.48s;"
+    ></span>
+    <span
+      class="mg-fix"
+      style="position: absolute; left: 3px; top: 3px; width: 20px; height: 15px; border: 1.5px solid #57E4E9; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(87,228,233,0.6);"
+    ></span>
+  </span>
+  <div
+    class="mg-tag"
+    style="position: absolute; left: 20px; top: 88px; display: flex; gap: 10px; align-items: center; font-size: 12px; color: #ECEFF4;"
+  >
+    <span style="padding: 3px 9px; border: 1px solid rgba(87,228,233,0.45); border-radius: 999px; color: #57E4E9;">
+      facecam · top-left
+    </span>
+  </div>
+  <div
+    class="mg-you"
+    style="position: absolute; left: 176px; top: 86px; display: flex; gap: 8px; align-items: center; font-size: 12px; color: #ECEFF4;"
+  >
+    <span style="color: #9AA4B2;">→</span>
+    <span style="padding: 3px 9px; border-radius: 6px; background: #182131; border: 1px solid rgba(236,239,244,0.18);">
+      {'{"x": 12, "y": 8, "w": 480, "h": 270}'}
+    </span>
+  </div>
+  <span style="position: absolute; left: 20px; top: 132px; font-size: 11px; color: #9AA4B2;">
+    Pegasus 1.5 · describes every 15 s
+  </span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 20px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.00s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      0:00
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 28px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.00s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 28px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.05s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 86px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.10s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      0:15
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 94px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.11s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 94px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.16s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 152px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.20s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      0:30
+    </span>
+  </span>
+  <span
+    class="mg-pick"
+    style="position: absolute; left: 150px; top: 152px; width: 64px; height: 38px; border-radius: 5px; border: 2px solid #57E4E9; box-sizing: border-box;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 160px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.22s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 160px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.27s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 218px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.30s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      0:45
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 226px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.33s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 226px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.38s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 284px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.40s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      1:00
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 292px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.44s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 292px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.49s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 350px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.50s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      1:15
+    </span>
+  </span>
+  <span
+    class="mg-pick"
+    style="position: absolute; left: 348px; top: 152px; width: 64px; height: 38px; border-radius: 5px; border: 2px solid #57E4E9; box-sizing: border-box;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 358px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.55s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 358px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.60s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 416px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.60s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      1:30
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 424px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.66s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 424px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.71s;"
+  ></span>
+  <span
+    class="mg-win"
+    style="position: absolute; left: 482px; top: 154px; width: 60px; height: 34px; border-radius: 4px; background: #182131; border: 1px solid rgba(236,239,244,0.18); box-sizing: border-box; animation-delay: 0.70s;"
+  >
+    <span style="position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: #6E7887;">
+      1:45
+    </span>
+  </span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 490px; top: 196px; width: 44px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.77s;"
+  ></span>
+  <span
+    class="mg-tok"
+    style="position: absolute; left: 490px; top: 204px; width: 30px; height: 4px; border-radius: 2px; background: #3A4456; animation-delay: 0.82s;"
+  ></span>
+  <span style="position: absolute; left: 20px; top: 226px; font-size: 11px; color: #9AA4B2;">
+    Gemini 2.5 Flash · picks the clips · you approve
+  </span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 35px; top: 308px; width: 30px; height: 22px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.00s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 101px; top: 294px; width: 30px; height: 36px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.07s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 167px; top: 254px; width: 30px; height: 76px; border-radius: 4px 4px 0 0; background: #57E4E9; animation-delay: 0.14s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 233px; top: 302px; width: 30px; height: 28px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.21s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 299px; top: 288px; width: 30px; height: 42px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.28s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 365px; top: 264px; width: 30px; height: 66px; border-radius: 4px 4px 0 0; background: #57E4E9; animation-delay: 0.35s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 431px; top: 312px; width: 30px; height: 18px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.42s;"
+  ></span>
+  <span
+    class="mg-bar"
+    style="position: absolute; left: 497px; top: 298px; width: 30px; height: 32px; border-radius: 4px 4px 0 0; background: #3A4456; animation-delay: 0.49s;"
+  ></span>
+  <span style="position: absolute; left: 20px; top: 330px; width: 520px; height: 1px; background: rgba(236,239,244,0.2);"></span>
+  <span
+    class="mg-chip"
+    style="position: absolute; left: 96px; top: 344px; padding: 5px 10px; border-radius: 6px; background: #182131; border: 1px solid rgba(87,228,233,0.45); font-size: 12px; color: #ECEFF4; white-space: nowrap; animation-delay: 0.00s;"
+  >
+    <span style="color: #57E4E9;">9/10</span> · &quot;1v4 clutch&quot;
+  </span>
+  <span
+    class="mg-chip"
+    style="position: absolute; left: 300px; top: 344px; padding: 5px 10px; border-radius: 6px; background: #182131; border: 1px solid rgba(87,228,233,0.45); font-size: 12px; color: #ECEFF4; white-space: nowrap; animation-delay: 0.25s;"
+  >
+    <span style="color: #57E4E9;">8/10</span> · &quot;ace on B site&quot;
+  </span>
+  <span
+    class="mg-ok"
+    style="position: absolute; left: 104px; top: 384px; font-size: 12px; color: #57E4E9; animation-delay: 0.00s;"
+  >
+    ✓ approved · uploading
+  </span>
+  <span
+    class="mg-ok"
+    style="position: absolute; left: 308px; top: 384px; font-size: 12px; color: #6E7887; animation-delay: 0.30s;"
+  >
+    ✕ rejected
+  </span>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    font-family: var(--font-mono);
+    color: #eceff4;
+  }
+
+  @keyframes mgFrame {
+    0%,
+    2% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    6%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-frame {
+    animation: mgFrame 7s ease infinite;
+  }
+
+  @keyframes mgBox {
+    0%,
+    8% {
+      opacity: 0;
+      transform: scale(1.8);
+    }
+
+    11%,
+    19% {
+      opacity: 1;
+      transform: none;
+    }
+
+    23%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .mg-box {
+    transform-origin: center;
+    animation: mgBox 7s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+  }
+
+  @keyframes mgTag {
+    0%,
+    12% {
+      opacity: 0;
+    }
+
+    15%,
+    90% {
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-tag {
+    animation: mgTag 7s ease infinite;
+  }
+
+  @keyframes mgYou {
+    0%,
+    17% {
+      opacity: 0;
+      transform: translateX(-6px);
+    }
+
+    20%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-you {
+    animation: mgYou 7s ease infinite;
+  }
+
+  @keyframes mgFix {
+    0%,
+    21% {
+      opacity: 0;
+      transform: scale(1.15);
+    }
+
+    24%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-fix {
+    transform-origin: center;
+    animation: mgFix 7s ease infinite;
+  }
+
+  @keyframes mgWin {
+    0%,
+    26% {
+      opacity: 0;
+      transform: translateX(-6px);
+    }
+
+    30%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-win {
+    animation: mgWin 7s ease infinite;
+  }
+
+  @keyframes mgTok {
+    0%,
+    31% {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+
+    36%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-tok {
+    animation: mgTok 7s ease infinite;
+  }
+
+  @keyframes mgBar {
+    0%,
+    47% {
+      transform: scaleY(0);
+    }
+
+    57%,
+    90% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      transform: scaleY(1);
+      opacity: 0;
+    }
+  }
+
+  .mg-bar {
+    transform-origin: bottom;
+    animation: mgBar 7s cubic-bezier(0.3, 0.7, 0.3, 1) infinite;
+  }
+
+  @keyframes mgPick {
+    0%,
+    61% {
+      opacity: 0;
+    }
+
+    64%,
+    90% {
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-pick {
+    animation: mgPick 7s ease infinite;
+  }
+
+  @keyframes mgChip {
+    0%,
+    65% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    69%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-chip {
+    animation: mgChip 7s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+  }
+
+  @keyframes mgOk {
+    0%,
+    74% {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+
+    78%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .mg-ok {
+    animation: mgOk 7s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+  }
+</style>

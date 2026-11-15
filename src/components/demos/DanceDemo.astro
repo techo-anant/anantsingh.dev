@@ -1,0 +1,272 @@
+---
+/**
+ * DANCE (ICCV 2025): four prototypes start together, repel while exploring, then settle into clusters that change color; an energy curve goes from exploration to refinement (§8).
+ * Ported from the reference (Live.dc.html); a 560×420 scene that loops forever.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <svg
+    aria-hidden="true"
+    width="560"
+    height="420"
+    viewBox="0 0 560 420"
+    style="position: absolute; inset: 0;"
+  >
+    <circle class="dn-dot" cx="99.4" cy="117.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="147.4" cy="94.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="126.3" cy="94.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="158.6" cy="144.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="165.3" cy="129.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="140.4" cy="134.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="110.8" cy="142.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="97.3" cy="132.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="148.1" cy="141.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="119.3" cy="183.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="131.5" cy="128.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="134.1" cy="129.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="120.0" cy="133.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="182.7" cy="140.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="134.6" cy="153.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="182.4" cy="135.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="113.8" cy="189.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="92.0" cy="132.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="147.3" cy="185.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="105.3" cy="91.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="147.2" cy="129.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="119.9" cy="149.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="405.8" cy="125.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="388.8" cy="145.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="439.1" cy="120.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="388.3" cy="134.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="412.4" cy="99.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="388.0" cy="141.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="397.5" cy="113.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="405.5" cy="119.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="399.9" cy="81.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="445.5" cy="124.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="377.2" cy="139.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="408.0" cy="120.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="427.2" cy="165.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="414.4" cy="151.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="456.1" cy="99.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="386.4" cy="135.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="355.6" cy="114.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="433.6" cy="140.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="415.1" cy="82.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="461.1" cy="131.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="419.9" cy="129.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="355.4" cy="91.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="138.4" cy="318.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="148.4" cy="275.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="163.4" cy="291.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="183.0" cy="285.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="137.2" cy="217.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="174.3" cy="285.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="202.0" cy="277.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="154.1" cy="288.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="129.6" cy="259.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="143.8" cy="285.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="224.4" cy="295.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="199.7" cy="284.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="177.3" cy="271.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="162.7" cy="231.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="138.7" cy="254.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="191.8" cy="293.3" r="3.4"></circle>
+    <circle class="dn-dot" cx="199.7" cy="311.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="162.1" cy="301.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="220.8" cy="279.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="198.3" cy="276.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="128.1" cy="282.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="148.6" cy="282.2" r="3.4"></circle>
+    <circle class="dn-dot" cx="418.0" cy="276.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="374.4" cy="311.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="465.4" cy="263.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="406.4" cy="270.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="447.6" cy="278.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="440.4" cy="230.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="400.6" cy="296.9" r="3.4"></circle>
+    <circle class="dn-dot" cx="436.2" cy="239.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="407.4" cy="241.0" r="3.4"></circle>
+    <circle class="dn-dot" cx="403.5" cy="293.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="424.2" cy="292.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="434.9" cy="239.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="412.9" cy="316.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="409.8" cy="248.7" r="3.4"></circle>
+    <circle class="dn-dot" cx="462.6" cy="271.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="429.8" cy="299.8" r="3.4"></circle>
+    <circle class="dn-dot" cx="383.4" cy="278.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="402.1" cy="241.4" r="3.4"></circle>
+    <circle class="dn-dot" cx="408.4" cy="293.5" r="3.4"></circle>
+    <circle class="dn-dot" cx="426.3" cy="232.6" r="3.4"></circle>
+    <circle class="dn-dot" cx="400.6" cy="301.1" r="3.4"></circle>
+    <circle class="dn-dot" cx="457.2" cy="247.7" r="3.4"></circle>
+    <line x1="20" y1="400" x2="540" y2="400" stroke="rgba(236,239,244,0.2)"></line>
+    <line
+      x1="300"
+      y1="336"
+      x2="300"
+      y2="406"
+      stroke="rgba(236,239,244,0.35)"
+      stroke-dasharray="3 4"
+    ></line>
+    <path
+      class="dn-energy"
+      pathLength="1"
+      d="M 20 344 C 70 352, 110 340, 150 368 S 230 360, 270 388 S 330 397, 380 398 L 540 399"
+      fill="none"
+      stroke="#57E4E9"
+      stroke-width="2"
+    ></path>
+    <g style="font-family: var(--font-mono)" font-size="11" fill="#9AA4B2">
+      <text x="20" y="332">
+        energy
+      </text>
+      <text x="150" y="418" text-anchor="middle">
+        exploration
+      </text>
+      <text x="420" y="418" text-anchor="middle">
+        refinement
+      </text>
+    </g>
+  </svg>
+  <div
+    class="dn-proto"
+    style="position: absolute; left: 0; top: 0; width: 18px; height: 18px; offset-path: path('M 280 200 C 60 40, 470 30, 300 210 S 50 190, 130 140'); animation-delay: 0.00s;"
+  >
+    <span
+      class="dn-repel"
+      style="position: absolute; inset: 0; border-radius: 50%; border: 1px solid #57E4E9; animation-delay: 0.00s;"
+    ></span>
+    <span style="position: absolute; inset: 3px; border-radius: 50%; background: #57E4E9; box-shadow: 0 0 14px #57E4E9;"></span>
+  </div>
+  <div
+    class="dn-proto"
+    style="position: absolute; left: 0; top: 0; width: 18px; height: 18px; offset-path: path('M 280 200 C 520 280, 530 30, 330 90 S 380 160, 400 120'); animation-delay: 0.06s;"
+  >
+    <span
+      class="dn-repel"
+      style="position: absolute; inset: 0; border-radius: 50%; border: 1px solid #57E4E9; animation-delay: 0.06s;"
+    ></span>
+    <span style="position: absolute; inset: 3px; border-radius: 50%; background: #57E4E9; box-shadow: 0 0 14px #57E4E9;"></span>
+  </div>
+  <div
+    class="dn-proto"
+    style="position: absolute; left: 0; top: 0; width: 18px; height: 18px; offset-path: path('M 280 200 C 50 320, 270 340, 110 250 S 230 310, 170 280'); animation-delay: 0.12s;"
+  >
+    <span
+      class="dn-repel"
+      style="position: absolute; inset: 0; border-radius: 50%; border: 1px solid #57E4E9; animation-delay: 0.12s;"
+    ></span>
+    <span style="position: absolute; inset: 3px; border-radius: 50%; background: #57E4E9; box-shadow: 0 0 14px #57E4E9;"></span>
+  </div>
+  <div
+    class="dn-proto"
+    style="position: absolute; left: 0; top: 0; width: 18px; height: 18px; offset-path: path('M 280 200 C 530 200, 300 330, 470 300 S 390 260, 430 270'); animation-delay: 0.18s;"
+  >
+    <span
+      class="dn-repel"
+      style="position: absolute; inset: 0; border-radius: 50%; border: 1px solid #57E4E9; animation-delay: 0.18s;"
+    ></span>
+    <span style="position: absolute; inset: 3px; border-radius: 50%; background: #57E4E9; box-shadow: 0 0 14px #57E4E9;"></span>
+  </div>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    font-family: var(--font-mono);
+    color: #eceff4;
+  }
+
+  @keyframes protoRide {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+
+    4% {
+      opacity: 1;
+    }
+
+    62% {
+      offset-distance: 100%;
+    }
+
+    92% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+
+  .dn-proto {
+    animation: protoRide 8s cubic-bezier(0.25, 0.55, 0.3, 1) infinite;
+  }
+
+  @keyframes repel {
+    0% {
+      transform: scale(4.5);
+      opacity: 0.45;
+    }
+
+    55% {
+      transform: scale(1.6);
+      opacity: 0.2;
+    }
+
+    66%,
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  .dn-repel {
+    animation: repel 8s ease-out infinite;
+  }
+
+  @keyframes tint {
+    0%,
+    55% {
+      fill: #6b778a;
+    }
+
+    68%,
+    92% {
+      fill: #57e4e9;
+    }
+
+    100% {
+      fill: #6b778a;
+    }
+  }
+
+  .dn-dot {
+    fill: #6b778a;
+    animation: tint 8s ease infinite;
+  }
+
+  @keyframes drawE {
+    0% {
+      stroke-dashoffset: 1;
+    }
+
+    90%,
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .dn-energy {
+    stroke-dasharray: 1;
+    animation: drawE 8s linear infinite;
+  }
+</style>

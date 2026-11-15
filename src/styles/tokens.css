@@ -127,6 +127,8 @@
   --ink: var(--software-ink);
   --muted: var(--software-muted);
   --accent: var(--software-accent);
+  --hint-hover: var(--software-hint-hover);
+  --annotation: var(--software-annotation);
   --rule: rgba(255, 255, 255, 0.12);
   --bg-image: var(--software-bg-image);
   --bg-size: auto;
@@ -148,6 +150,8 @@
   --ink: var(--ai-ink);
   --muted: var(--ai-muted);
   --accent: var(--ai-accent);
+  --hint-hover: var(--ai-hint-hover);
+  --annotation: var(--ai-annotation);
   --rule: rgba(255, 255, 255, 0.12);
   --bg-image: var(--ai-bg-image);
   --bg-size: auto;
@@ -169,6 +173,8 @@
   --ink: var(--robotics-ink);
   --muted: var(--robotics-muted);
   --accent: var(--robotics-accent);
+  --hint-hover: var(--robotics-hint-hover);
+  --annotation: var(--robotics-annotation);
   --rule: rgba(255, 255, 255, 0.12);
   --bg-image:
     var(--robotics-hazard), var(--robotics-hazard),
@@ -194,6 +200,8 @@
   --ink: var(--accounting-ink);
   --muted: var(--accounting-muted);
   --accent: var(--accounting-accent);
+  --hint-hover: var(--accounting-hint-hover);
+  --annotation: var(--accounting-annotation);
   --rule: rgba(0, 0, 0, 0.12);
   --bg-image:
     linear-gradient(var(--accounting-margin), var(--accounting-margin)),
@@ -217,6 +225,8 @@
   --ink: var(--contact-ink);
   --muted: var(--contact-muted);
   --accent: var(--contact-accent);
+  --hint-hover: var(--contact-accent);
+  --annotation: var(--contact-muted);
   --rule: rgba(0, 0, 0, 0.12);
   --bg-image: var(--cover-vignette);
   --bg-size: auto;

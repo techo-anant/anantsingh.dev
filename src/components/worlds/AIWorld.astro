@@ -1,0 +1,332 @@
+---
+/**
+ * AI world, "the network" (BUILD_PLAN §7.2): eyebrow, a headline that reveals
+ * word by word, and the DANCE paper card. The object controls (open the
+ * network → gallery → DANCE / Models in production / Learning from scratch
+ * panels) are the shared <Gallery>. Colors come from [data-world="ai"].
+ */
+import { getPapers, getProjects } from '../../lib/content';
+import DanceDemo from '../demos/DanceDemo.astro';
+import LearningDemo from '../demos/LearningDemo.astro';
+import ModelsDemo from '../demos/ModelsDemo.astro';
+import Gallery from './Gallery.astro';
+
+const [papers, projects] = await Promise.all([getPapers(), getProjects('ai')]);
+const paper = papers[0];
+const DEMOS = { DanceDemo, ModelsDemo, LearningDemo } as const;
+
+const HEADLINE = 'Learning machines, from scratch.';
+/** Words 3 and 4 ("from scratch.") are in accent (§7.2). */
+const WORDS = HEADLINE.split(' ').map((t, i) => ({ t, accent: i >= 2 }));
+---
+
+<div class="ai">
+  <div class="col">
+    <p class="eyebrow fluid">Artificial Intelligence</p>
+    <h2 class="title fluid" aria-label={HEADLINE}>
+      {WORDS.map((w, i) => (
+        <span class:list={['word', { accent: w.accent }]} style={`--i: ${i}`} aria-hidden="true">
+          {w.t}{' '}
+        </span>
+      ))}
+    </h2>
+  </div>
+
+  {paper && (
+    <div class="block">
+      <span class="dash" aria-hidden="true" />
+      <span class="note fluid" aria-hidden="true">
+        next paper…
+      </span>
+      <span class="node" aria-hidden="true" />
+      <a class="paper" href={paper.href} target="_blank" rel="noopener">
+        <span class="badge fluid">{paper.badge}</span>
+        <span class="paper-title fluid">{paper.title}</span>
+        <span class="subtitle fluid">{paper.subtitle}</span>
+        <span class="authors fluid">{paper.authors.join(' · ')}</span>
+      </a>
+    </div>
+  )}
+
+  <Gallery
+    world={1}
+    items={projects}
+    openLabel="Open my AI work"
+    hint="▸ open the network"
+    backLabel="← back"
+    labelWidth={{ d: 230, p: 160 }}
+  >
+    {projects.map((p, i) => {
+      const Demo = DEMOS[p.demo as keyof typeof DEMOS];
+      return Demo && <Demo slot={`demo-${i}`} />;
+    })}
+  </Gallery>
+</div>
+
+<style>
+  /* Phone first (§7.2 phone); desktop below. */
+  .ai {
+    position: absolute;
+    inset: 0;
+  }
+
+  .col {
+    position: absolute;
+    top: calc(84 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .eyebrow {
+    --fs: 11;
+
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .title {
+    --fs: 44;
+
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  /* Word-by-word reveal (§7.2). */
+  .word {
+    display: inline-block;
+    white-space: pre;
+    color: var(--ink);
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(8px);
+    transition:
+      opacity 0.3s ease,
+      filter 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .word.accent {
+    color: var(--accent);
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .word {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition:
+      opacity 0.45s ease calc(0.55s + var(--i) * 0.2s),
+      filter 0.5s ease calc(0.55s + var(--i) * 0.2s),
+      transform 0.5s ease calc(0.55s + var(--i) * 0.2s);
+  }
+
+  /* The paper (§7.2). */
+  .block {
+    position: absolute;
+    top: calc(556 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    padding-left: 30px;
+  }
+
+  .dash,
+  .note,
+  .node {
+    position: absolute;
+  }
+
+  .dash {
+    top: -40px;
+    left: 7px;
+    width: 2px;
+    height: 34px;
+    background: repeating-linear-gradient(
+      180deg,
+      rgba(87, 228, 233, 0.7) 0 4px,
+      transparent 4px 9px
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .note {
+    --fs: 10;
+
+    top: -36px;
+    left: 20px;
+    font-family: var(--font-mono);
+    color: var(--annotation);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .node {
+    top: 5px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: aiNode 2.4s ease-in-out infinite;
+  }
+
+  .paper {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .paper:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid var(--accent);
+    outline-offset: 6px;
+  }
+
+  .badge {
+    --fs: 10;
+
+    padding: 4px 9px;
+    border: 1px solid rgba(87, 228, 233, 0.45);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    align-self: flex-start;
+  }
+
+  .paper-title {
+    --fs: 23;
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    --fs: 13;
+
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .authors {
+    --fs: 11;
+
+    font-family: var(--font-mono);
+    color: var(--annotation);
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .dash,
+  :global(.worlds[data-entered] .world[data-active]) .note {
+    opacity: 1;
+    transition: opacity 0.8s ease 2s;
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .paper {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s ease 1.5s,
+      transform 0.7s ease 1.5s;
+  }
+
+  @keyframes aiNode {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(87, 228, 233, 0.55);
+    }
+
+    50% {
+      box-shadow: 0 0 0 9px rgba(87, 228, 233, 0);
+    }
+  }
+
+  /* Desktop (§7.2, §4.4). Keep in sync with src/lib/layout.ts. */
+  @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+    .col {
+      top: calc(168 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(440px, 41.7cqw, 720px);
+      gap: 22px;
+    }
+
+    .eyebrow {
+      --fs: 13;
+    }
+
+    .title {
+      --fs: 76;
+
+      line-height: 0.98;
+    }
+
+    .block {
+      top: calc(500 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(440px, 41.7cqw, 720px);
+      padding-left: 34px;
+    }
+
+    .dash {
+      top: -46px;
+      left: 9px;
+      height: 40px;
+    }
+
+    .note {
+      --fs: 11;
+
+      top: -44px;
+      left: 24px;
+    }
+
+    .node {
+      top: 6px;
+      left: 3px;
+    }
+
+    .paper {
+      gap: 8px;
+    }
+
+    .badge {
+      --fs: 11;
+
+      padding: 4px 10px;
+    }
+
+    .paper-title {
+      --fs: 28;
+    }
+
+    .subtitle {
+      --fs: 14;
+
+      max-width: 460px;
+      line-height: 1.5;
+    }
+
+    .authors {
+      --fs: 12;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word {
+      filter: none;
+    }
+  }
+</style>

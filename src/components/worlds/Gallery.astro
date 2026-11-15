@@ -1,0 +1,474 @@
+---
+/**
+ * The object controls shared by the Software and AI worlds (BUILD_PLAN §7.1,
+ * §7.2, §7.6): three states around the particle object.
+ *   idle     dashed pulsing ring, invisible circular hit area, "▸ open …" hint
+ *   gallery  three hotspots over the gallery icons, labels, "pick one", close ×
+ *   focus    one panel per item: demo, meta, line, back pill, link pill (only
+ *            when the item has a URL). Desktop: flies in from its hotspot.
+ *            Phone: an opaque full-section sheet with its own close ×.
+ *
+ * Colors come from the section's [data-world] tokens. Positions are anchored
+ * to the particle object via --ox, --oy and --k (set by worlds.ts).
+ * Demos arrive as named slots "demo-0" … "demo-2". Behavior: ./gallery.ts.
+ */
+import type { Project } from '../../lib/content';
+import type { WorldId } from '../../lib/worlds';
+
+interface Props {
+  world: WorldId;
+  items: Project[];
+  /** aria-label of the circular hit area, e.g. "Open my projects". */
+  openLabel: string;
+  /** Visible hint, e.g. "▸ open projects/". */
+  hint: string;
+  /** Back pill in the panel, e.g. "← projects". */
+  backLabel: string;
+  /** Gallery label width in artboard px (desktop, phone). */
+  labelWidth?: { d: number; p: number };
+}
+
+const { world, items, openLabel, hint, backLabel, labelWidth = { d: 210, p: 140 } } = Astro.props;
+
+const demos = await Promise.all(
+  items.map((_, i) =>
+    Astro.slots.has(`demo-${i}`) ? Astro.slots.render(`demo-${i}`) : Promise.resolve(''),
+  ),
+);
+
+/** Hotspot centers relative to the object, in artboard px (§7.1): desktop, phone. */
+const SPOTS = [
+  { d: [-230, -115], p: [-102, -54] },
+  { d: [231, -115], p: [102, -54] },
+  { d: [0, 144], p: [0, 73] },
+] as const;
+/** Desktop panel top-left relative to the object (artboard px: 640×640 at 700,118). */
+const PANEL = [-322, -314] as const;
+
+const spotVars = (i: number) =>
+  `--dx: ${SPOTS[i]?.d[0]}; --dy: ${SPOTS[i]?.d[1]}; --px: ${SPOTS[i]?.p[0]}; --py: ${SPOTS[i]?.p[1]}`;
+---
+
+<div class="gal" data-gal={world} style={`--lw-d: ${labelWidth.d}; --lw-p: ${labelWidth.p}`}>
+  <!-- idle -->
+  <div data-gal-idle>
+    <span class="ring" aria-hidden="true"></span>
+    <button class="hit" type="button" aria-label={openLabel} data-gal-open tabindex="-1"></button>
+    <button class="hint fluid" type="button" data-gal-open data-gal-opener>
+      {hint}
+    </button>
+  </div>
+
+  <!-- gallery -->
+  <div data-gal-gallery hidden>
+    {items.map((p, i) => (
+      <>
+        <button
+          class="spot"
+          type="button"
+          aria-label={p.name}
+          data-gal-focus={i}
+          style={spotVars(i)}
+        />
+        <span class="spot-label fluid" aria-hidden="true" style={spotVars(i)}>
+          {p.name}
+        </span>
+      </>
+    ))}
+    <span class="pick fluid" aria-hidden="true">
+      pick one
+    </span>
+    <button class="close close-gallery fluid" type="button" data-gal-close>
+      close ×
+    </button>
+  </div>
+
+  <!-- focus: one panel per item -->
+  {items.map((p, i) => (
+    <div class="focus" data-gal-panel={i} role="group" aria-label={p.name} hidden>
+      <button class="close close-sheet fluid" type="button" data-gal-close>
+        close ×
+      </button>
+      <div class="panel-pos">
+        <div
+          class="panel"
+          style={`--fx: ${(SPOTS[i]?.d[0] ?? 0) - PANEL[0]}px; --fy: ${(SPOTS[i]?.d[1] ?? 0) - PANEL[1]}px`}
+        >
+          <div class="demo-box">
+            <div class="demo-scale">
+              <Fragment set:html={demos[i]} />
+            </div>
+          </div>
+          {p.meta && <p class="meta fluid">{p.meta}</p>}
+          <p class="pline fluid">{p.line}</p>
+          <div class="actions">
+            <button class="pill fluid" type="button" data-gal-back>
+              {backLabel}
+            </button>
+            {p.href && (
+              <a class="pill pill-cta fluid" href={p.href} target="_blank" rel="noopener">
+                {p.cta}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<script>
+  import { initGalleries } from './gallery';
+
+  initGalleries();
+</script>
+
+<style>
+  /* Phone first (§7.1/§7.2 phone, §7.6 sheets); desktop below. */
+  .gal {
+    --line-soft: color-mix(in srgb, var(--ink) 25%, transparent);
+    --glass: color-mix(in srgb, var(--bg) 70%, transparent);
+
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .gal > *,
+  .gal button,
+  .gal a {
+    pointer-events: auto;
+  }
+
+  .ring,
+  .hit,
+  .spot,
+  .spot-label {
+    position: absolute;
+  }
+
+  .ring {
+    --d: calc(260px * var(--k, 1));
+
+    top: calc(var(--oy) - var(--d) / 2);
+    left: calc(var(--ox) - var(--d) / 2);
+    width: var(--d);
+    height: var(--d);
+    border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ringPulse 3.2s ease-in-out infinite;
+  }
+
+  .hit {
+    --d: calc(300px * var(--k, 1));
+
+    top: calc(var(--oy) - var(--d) / 2);
+    left: calc(var(--ox) - var(--d) / 2);
+    width: var(--d);
+    height: var(--d);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .hint,
+  .close {
+    position: absolute;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+  }
+
+  .hint {
+    --fs: 12;
+
+    top: calc(var(--oy) + 136px * var(--k, 1));
+    right: 16px;
+    padding: 0 8px;
+    border: none;
+    background: none;
+    color: var(--accent);
+  }
+
+  .hint:hover {
+    color: var(--hint-hover);
+  }
+
+  /* Gallery */
+  .spot {
+    --w: calc(116px * var(--k, 1));
+    --h: calc(96px * var(--k, 1));
+
+    top: calc(var(--oy) + var(--py) * 1px * var(--k, 1) - var(--h) / 2);
+    left: calc(var(--ox) + var(--px) * 1px * var(--k, 1) - var(--w) / 2);
+    width: var(--w);
+    height: var(--h);
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .spot-label {
+    --fs: 11;
+    --w: calc(var(--lw-p) * 1px * var(--k, 1));
+
+    top: calc(var(--oy) + var(--py) * 1px * var(--k, 1) + 50px * var(--k, 1));
+    left: calc(var(--ox) + var(--px) * 1px * var(--k, 1) - var(--w) / 2);
+    width: var(--w);
+    font-family: var(--font-mono);
+    text-align: center;
+    color: var(--ink);
+    pointer-events: none;
+  }
+
+  .pick {
+    --fs: 11;
+
+    position: absolute;
+    top: calc(var(--oy) + 148px * var(--k, 1));
+    left: 24px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    animation: fadeUp 0.5s ease 0.9s both;
+  }
+
+  .close {
+    --fs: 12;
+
+    padding: 0 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    background: var(--glass);
+    color: var(--ink);
+  }
+
+  .close-gallery {
+    top: calc(var(--oy) + 136px * var(--k, 1));
+    right: 16px;
+  }
+
+  /* Focus: phone = opaque sheet over the section (§7.6). */
+  .focus {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    padding: calc(132 / 844 * 100cqh) 27px 0;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .close-sheet {
+    top: calc(72 / 844 * 100cqh);
+    right: 16px;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .demo-box {
+    position: relative;
+    width: calc(336px * var(--k, 1));
+    height: calc(252px * var(--k, 1));
+    flex: none;
+  }
+
+  .demo-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(calc(0.6 * var(--k, 1)));
+    transform-origin: 0 0;
+  }
+
+  .meta {
+    --fs: 10;
+
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .pline {
+    --fs: 17;
+
+    font-family: var(--font-sans);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--ink);
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .pill {
+    --fs: 12;
+
+    display: inline-flex;
+    min-height: 44px;
+    padding: 0 16px;
+    align-items: center;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    background: var(--glass);
+    font-family: var(--font-mono);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .pill-cta {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* Focus rings in the world's accent (§12). */
+  .hint:focus-visible,
+  .close:focus-visible,
+  .spot:focus-visible,
+  .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* Desktop (§7.1, §4.4). Keep in sync with src/lib/layout.ts. */
+  @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+    .ring {
+      --d: calc(420px * var(--k, 1));
+    }
+
+    .hit {
+      --d: calc(460px * var(--k, 1));
+    }
+
+    .hint {
+      --fs: 13;
+
+      top: calc(var(--oy) + 252px * var(--k, 1));
+      right: auto;
+      left: calc(var(--ox) - 120px * var(--k, 1));
+      width: calc(240px * var(--k, 1));
+      padding: 0;
+    }
+
+    .spot {
+      --w: calc(210px * var(--k, 1));
+      --h: calc(180px * var(--k, 1));
+
+      top: calc(var(--oy) + var(--dy) * 1px * var(--k, 1) - var(--h) / 2);
+      left: calc(var(--ox) + var(--dx) * 1px * var(--k, 1) - var(--w) / 2);
+      border-radius: 22px;
+    }
+
+    /* Labels show on hover or keyboard focus (always visible on phone). */
+    .spot-label {
+      --fs: 13;
+      --w: calc(var(--lw-d) * 1px * var(--k, 1));
+
+      top: calc(var(--oy) + var(--dy) * 1px * var(--k, 1) + 96px * var(--k, 1));
+      left: calc(var(--ox) + var(--dx) * 1px * var(--k, 1) - var(--w) / 2);
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+    }
+
+    .spot:hover + .spot-label,
+    .spot:focus-visible + .spot-label {
+      opacity: 1;
+      transform: none;
+    }
+
+    .pick {
+      --fs: 12;
+
+      top: calc(var(--oy) + 268px * var(--k, 1));
+      left: calc(var(--ox) - 80px * var(--k, 1));
+      width: calc(160px * var(--k, 1));
+      text-align: center;
+    }
+
+    .close-gallery {
+      top: calc(112 / 900 * 100cqh);
+      right: auto;
+      left: calc(var(--ox) + 218px * var(--k, 1));
+      padding: 0 16px;
+    }
+
+    /* Desktop focus: a 640×640 panel that flies in from its hotspot. */
+    .focus {
+      padding: 0;
+      background: none;
+      animation: none;
+      pointer-events: none;
+    }
+
+    .close-sheet {
+      display: none;
+    }
+
+    .panel-pos {
+      position: absolute;
+      top: calc(var(--oy) - 314px * var(--k, 1));
+      left: calc(var(--ox) - 322px * var(--k, 1));
+      width: 640px;
+      height: 640px;
+      transform: scale(var(--k, 1));
+      transform-origin: 0 0;
+    }
+
+    .panel {
+      width: 640px;
+      height: 640px;
+      transform-origin: var(--fx) var(--fy);
+      pointer-events: auto;
+      animation: flyIn 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .demo-box {
+      width: 560px;
+      height: 420px;
+    }
+
+    .demo-scale {
+      transform: none;
+    }
+
+    /* Inside the scaled panel, sizes are artboard px (the panel scales them). */
+    .meta {
+      font-size: 11px;
+      animation: fadeUp 0.5s ease 0.45s both;
+    }
+
+    .pline {
+      font-size: 20px;
+      animation: fadeUp 0.5s ease 0.5s both;
+    }
+
+    .actions {
+      gap: 12px;
+      animation: fadeUp 0.5s ease 0.7s both;
+    }
+
+    .pill {
+      padding: 0 18px;
+      font-size: 12px;
+    }
+  }
+</style>
