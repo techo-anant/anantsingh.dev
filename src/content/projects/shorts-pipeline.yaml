@@ -1,7 +1,7 @@
 world: software
 slot: 0
 name: Shorts pipeline
+meta: solo · railway
 line: Long video in. Short clips out. A human says yes.
-cta: details ↗
-href: '#shorts-pipeline' # TODO(content): project page, repo, or remove the button (§15)
+# Private repository: no link pill.
 demo: ShortsDemo

@@ -63,6 +63,3 @@ async function single<C extends 'research' | 'site'>(collection: C) {
 export const getResearch = () => single('research');
 /** Contact details, links, blurb and cover lines (one entry). */
 export const getSite = () => single('site');
-
-/** Software timeline hover line: "<period> · <detail>" (§11.2). */
-export const roleDetailLine = (role: Role) => `${role.period} · ${role.detail}`;

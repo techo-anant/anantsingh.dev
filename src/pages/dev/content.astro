@@ -14,7 +14,6 @@ import {
   getResearch,
   getRoles,
   getSite,
-  roleDetailLine,
 } from '../../lib/content';
 
 const [roles, software, ai, papers, research, ledger, credentials, site] = await Promise.all([
@@ -27,9 +26,6 @@ const [roles, software, ai, papers, research, ledger, credentials, site] = await
   getCredentials(),
   getSite(),
 ]);
-
-/** Values still waiting for real content (shown highlighted). */
-const isPlaceholder = (value: string) => /^\[.*\]$/.test(value) || value.startsWith('#');
 ---
 
 <Base title="Content · anantsingh.dev" noindex>
@@ -49,8 +45,8 @@ const isPlaceholder = (value: string) => /^\[.*\]$/.test(value) || value.startsW
             <strong>{r.title}</strong> · {r.org}
             {r.current && <em> · current</em>}
             <br />
-            <span class:list={{ ph: isPlaceholder(r.period) || isPlaceholder(r.detail) }}>
-              {roleDetailLine(r)}
+            <span class="stored">
+              stored, not shown: period {r.period ?? '—'} · detail {r.detail ?? '—'}
             </span>
           </li>
         ))}
@@ -72,7 +68,14 @@ const isPlaceholder = (value: string) => /^\[.*\]$/.test(value) || value.startsW
               <br />
               {p.line}
               <br />
-              {p.cta} <code class:list={{ ph: isPlaceholder(p.href) }}>{p.href}</code>
+              {p.meta && <code>{p.meta}</code>}
+              {p.href ? (
+                <>
+                  {p.cta} <code>{p.href}</code>
+                </>
+              ) : (
+                <em>no link pill</em>
+              )}
             </li>
           ))}
         </ol>
@@ -228,6 +231,11 @@ const isPlaceholder = (value: string) => /^\[.*\]$/.test(value) || value.startsW
   .ph {
     padding: 0 4px;
     background: #ffe08a;
+  }
+
+  .stored {
+    font-size: 13px;
+    color: var(--cover-muted);
   }
 
   .note {

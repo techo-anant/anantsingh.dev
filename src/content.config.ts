@@ -17,17 +17,15 @@ const entries = (collection: string) =>
 
 const text = z.string().trim().min(1);
 const order = z.number().int().positive();
-/** A full URL, or an in-page anchor like "#shorts-pipeline" (placeholder links). */
-const link = z.union([z.url(), z.string().regex(/^#[a-z0-9-]+$/)]);
-
-/** Software world: the role timeline (§7.1). Hover detail = "<period> · <detail>". */
+/** Software world: the role timeline (§7.1). Only title and org are shown;
+ * period and detail are stored for later use. */
 const roles = defineCollection({
   loader: entries('roles'),
   schema: z.strictObject({
     title: text,
     org: text,
-    period: text,
-    detail: text,
+    period: text.optional(),
+    detail: text.optional(),
     current: z.boolean().default(false),
     order,
   }),
@@ -37,25 +35,32 @@ const roles = defineCollection({
  * Gallery projects for the Software and AI worlds (§7.1, §7.2). Each world has
  * exactly three slots because the particle gallery shapes have three icons; a
  * fourth project needs a design change (§11.2). `slot` is also the order.
+ * A project without `href` (e.g. private work) renders no link pill.
  */
 const projects = defineCollection({
   loader: entries('projects'),
-  schema: z.strictObject({
-    world: z.enum(['software', 'ai']),
-    slot: z.union([z.literal(0), z.literal(1), z.literal(2)]),
-    name: text,
-    line: text,
-    cta: text,
-    href: link,
-    demo: z.enum([
-      'ShortsDemo',
-      'ThumbnailDemo',
-      'MotionDemo',
-      'DanceDemo',
-      'ModelsDemo',
-      'LearningDemo',
-    ]),
-  }),
+  schema: z
+    .strictObject({
+      world: z.enum(['software', 'ai']),
+      slot: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+      name: text,
+      /** Small mono line above the project line, e.g. "solo · railway". */
+      meta: text.optional(),
+      line: text,
+      cta: text.optional(),
+      href: z.url().optional(),
+      demo: z.enum([
+        'ShortsDemo',
+        'FiscaleDemo',
+        'ApiDemo',
+        'DanceDemo',
+        'ModelsDemo',
+        'LearningDemo',
+      ]),
+    })
+    .refine((p) => (p.cta === undefined) === (p.href === undefined), {
+      message: 'cta and href go together: give both (link pill) or neither (no link)',
+    }),
 });
 
 /** AI world: the paper card (§7.2). */

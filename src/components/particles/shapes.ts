@@ -91,7 +91,7 @@ function polyBuilder(circleSteps: number) {
   return { polys, rect, line, circ };
 }
 
-/** 4: Software gallery: film strip (Shorts), picture frame (Thumbnails), wheel (motion). */
+/** 4: Software gallery: film strip (Shorts pipeline), receipt (Fiscale), braces with endpoints (Subscription API). */
 export function shapeGallery(N: number, R: Rand): Pt[] {
   const { polys, rect, line, circ } = polyBuilder(28);
   // film strip: the Shorts pipeline
@@ -105,40 +105,85 @@ export function shapeGallery(N: number, R: Rand): Pt[] {
   rect(fx - 0.33, fy, 0.3, 0.32, 0);
   rect(fx, fy, 0.3, 0.32, 1);
   rect(fx + 0.33, fy, 0.3, 0.32, 0);
-  // picture frame: the thumbnail generator
+  // receipt: Fiscale
   const px = 1.05,
-    py = 0.55;
-  rect(px, py, 0.92, 0.66, 0);
-  rect(px, py, 0.76, 0.5, 0);
+    py = 0.55,
+    rw = 0.27,
+    rt = py + 0.33,
+    rb = py - 0.3;
+  const rc: P2[] = [
+    [px - rw, rb],
+    [px - rw, rt],
+    [px + rw, rt],
+    [px + rw, rb],
+  ];
+  for (let i = 0; i < 6; i++) {
+    const x0 = px + rw - (i / 6) * 2 * rw;
+    rc.push([x0 - rw / 6, rb - 0.05]);
+    rc.push([x0 - rw / 3, rb]);
+  }
+  line(rc, 0);
+  [0.2, 0.09, -0.02].forEach((dy) => {
+    line(
+      [
+        [px - 0.19, py + dy],
+        [px + 0.04, py + dy],
+      ],
+      0,
+    );
+    line(
+      [
+        [px + 0.11, py + dy],
+        [px + 0.19, py + dy],
+      ],
+      0,
+    );
+  });
   line(
     [
-      [px - 0.36, py - 0.22],
-      [px - 0.12, py + 0.06],
-      [px + 0.02, py - 0.08],
-      [px + 0.2, py + 0.12],
-      [px + 0.36, py - 0.22],
+      [px - 0.19, py - 0.14],
+      [px + 0.19, py - 0.14],
+    ],
+    1,
+  );
+  line(
+    [
+      [px - 0.19, py - 0.18],
+      [px + 0.19, py - 0.18],
+    ],
+    1,
+  );
+  // braces and endpoints: the Subscription Tracker API
+  const wx = 0,
+    wy = -0.75;
+  line(
+    [
+      [wx - 0.34, wy + 0.38],
+      [wx - 0.42, wy + 0.34],
+      [wx - 0.42, wy + 0.06],
+      [wx - 0.49, wy],
+      [wx - 0.42, wy - 0.06],
+      [wx - 0.42, wy - 0.34],
+      [wx - 0.34, wy - 0.38],
     ],
     0,
   );
-  circ(px + 0.2, py + 0.13, 0.06, 1);
-  // wheel: the motion library
-  const wx = 0,
-    wy = -0.75;
-  circ(wx, wy, 0.42, 0);
-  circ(wx, wy, 0.33, 0);
-  circ(wx, wy, 0.07, 1);
-  for (let i = 0; i < 9; i++) {
-    const t = (i / 9) * Math.PI * 2;
-    const c = Math.cos(t),
-      s2 = Math.sin(t);
-    line(
-      [
-        [wx + c * 0.33 - s2 * 0.05, wy + s2 * 0.33 + c * 0.05],
-        [wx + c * 0.42 + s2 * 0.05, wy + s2 * 0.42 - c * 0.05],
-      ],
-      1,
-    );
-  }
+  line(
+    [
+      [wx + 0.34, wy + 0.38],
+      [wx + 0.42, wy + 0.34],
+      [wx + 0.42, wy + 0.06],
+      [wx + 0.49, wy],
+      [wx + 0.42, wy - 0.06],
+      [wx + 0.42, wy - 0.34],
+      [wx + 0.34, wy - 0.38],
+    ],
+    0,
+  );
+  [0.2, 0, -0.2].forEach((dy, i) => {
+    circ(wx - 0.22, wy + dy, 0.035, i === 1 ? 1 : 0);
+    rect(wx + 0.04, wy + dy, 0.36, 0.09, i === 1 ? 1 : 0);
+  });
   return samplePolys(polys, N, R);
 }
 
