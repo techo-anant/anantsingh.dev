@@ -1,0 +1,41 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Keep the page out of search results (dev and utility pages). */
+  noindex?: boolean;
+}
+
+const {
+  title = 'Anant Kumar Singh · An Ongoing Autobiography',
+  description = 'Anant Kumar Singh: Business and Computer Science, software, AI, robotics research and audit.',
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <!-- The cover is the first paint: preload its two fonts (§2.1). -->
+    <Font cssVariable="--font-serif-cover" preload />
+    <Font cssVariable="--font-hand" preload />
+    <Font cssVariable="--font-sans" />
+    <Font cssVariable="--font-mono" />
+    <Font cssVariable="--font-condensed" />
+    <Font cssVariable="--font-ledger" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
