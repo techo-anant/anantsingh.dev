@@ -1,6 +1,10 @@
 /**
- * The five worlds, in page order (BUILD_PLAN §1, §2.3, §6.7). Design copy for
- * the shell lives here; colors live in src/styles/tokens.css.
+ * The five worlds (BUILD_PLAN §1, §2.3, §6.7). Design copy for the shell lives
+ * here; colors live in src/styles/tokens.css.
+ *
+ * The array index is the world's id (§3.4). The order on the page is random
+ * per visit (Contact always last, see Worlds.astro), so nothing here implies
+ * a position.
  */
 export const WORLDS = [
   {
@@ -8,42 +12,48 @@ export const WORLDS = [
     name: 'Software',
     label: 'Software Engineering',
     caption: 'the terminal',
-    hint: 'Scroll to travel to the next world',
-    hintPhone: 'Swipe up for the next world',
   },
   {
     id: 'ai',
     name: 'AI',
     label: 'Artificial Intelligence',
     caption: 'the network',
-    hint: 'Keep scrolling',
-    hintPhone: 'Keep scrolling',
   },
   {
     id: 'robotics',
     name: 'Robotics',
     label: 'Robotics',
     caption: 'the field',
-    hint: 'Keep scrolling',
-    hintPhone: 'Keep scrolling',
   },
   {
     id: 'accounting',
     name: 'Accounting',
     label: 'Accounting and audit',
     caption: 'the ledger',
-    hint: 'One more page',
-    hintPhone: 'One more page',
   },
   {
     id: 'contact',
     name: 'Contact',
     label: 'Contact',
     caption: 'thanks for reading',
-    hint: 'End of volume, so far',
-    hintPhone: 'End of volume, so far',
   },
 ] as const;
+
+/**
+ * Footer hints (§6.7) belong to a position on the page, not to a world:
+ * whichever world comes first says "Scroll to travel…", the fourth says
+ * "One more page", and Contact (always last) closes the volume.
+ */
+export const HINTS = [
+  { desktop: 'Scroll to travel to the next world', phone: 'Swipe up for the next world' },
+  { desktop: 'Keep scrolling', phone: 'Keep scrolling' },
+  { desktop: 'Keep scrolling', phone: 'Keep scrolling' },
+  { desktop: 'One more page', phone: 'One more page' },
+  { desktop: 'End of volume, so far', phone: 'End of volume, so far' },
+] as const;
+
+/** Key for the per-visit world order in sessionStorage. */
+export const ORDER_KEY = 'world-order';
 
 export type World = (typeof WORLDS)[number];
 export type WorldSlug = World['id'];

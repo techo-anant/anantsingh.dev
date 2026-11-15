@@ -24,6 +24,9 @@ export function initParticles(): ParticleEngine | undefined {
     mono,
   });
 
+  // Start in the first world's colors (the order is random per visit).
+  engine.setWorld(worlds.get().active, true);
+
   worlds.subscribe((s) => {
     engine.setPhone(s.layout === 'phone');
     engine.setWorld(s.active);

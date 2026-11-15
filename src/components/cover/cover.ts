@@ -14,7 +14,7 @@
  */
 import { currentLayout, prefersReducedMotion } from '../../lib/layout';
 import { WORLDS, worldIndex } from '../../lib/worlds';
-import { worlds } from '../worlds/worlds';
+import { positionOf, worlds } from '../worlds/worlds';
 import { chunkFragments, Handwriting } from './handwriting';
 import { InkMask, makeSplashes, type Splash } from './ink';
 
@@ -214,7 +214,7 @@ export function initCover(): void {
     document
       .querySelector<HTMLElement>('[data-section][data-active]')
       ?.focus({ preventScroll: true });
-    if (active > 0) history.replaceState(history.state, '', `#${WORLDS[active].id}`);
+    if (positionOf(active) > 0) history.replaceState(history.state, '', `#${WORLDS[active].id}`);
   }
 
   // ---- Reverse (§5.5) ----------------------------------------------------

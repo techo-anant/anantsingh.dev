@@ -6,13 +6,20 @@
  *
  * Behavior lives in ./worlds.ts. Navigation targets are real #hash links, so
  * the page still works without JavaScript (see the <noscript> styles).
+ *
+ * World order: random per visit, Contact always last. An inline script right
+ * after this markup picks the order (kept in sessionStorage for the visit) and
+ * reorders sections, layers, nav, dots and menu before the first paint.
+ * Without JavaScript the markup order below is used.
  */
-import { WORLDS } from '../../lib/worlds';
+import { HINTS, ORDER_KEY, WORLDS } from '../../lib/worlds';
+
+const ids = WORLDS.map((w) => w.id);
 import Paper from '../paper/Paper.astro';
 import SoftwareWorld from './SoftwareWorld.astro';
 ---
 
-<div class="worlds" data-worlds data-world={WORLDS[0].id}>
+<div class="worlds" data-worlds data-world={WORLDS[0].id} data-pos="0">
   <div class="layers" aria-hidden="true">
     {WORLDS.map((w) => (
       <div class="layer world-bg" data-layer data-world={w.id}>
@@ -95,10 +102,10 @@ import SoftwareWorld from './SoftwareWorld.astro';
 
   <div class="footer fluid" aria-hidden="true" data-footer>
     <span>
-      {WORLDS.map((w) => (
-        <span data-for={w.id}>
-          <span class="on-desktop">{w.hint}</span>
-          <span class="on-phone">{w.hintPhone}</span>
+      {HINTS.map((h, pos) => (
+        <span data-hint={pos}>
+          <span class="on-desktop">{h.desktop}</span>
+          <span class="on-phone">{h.phone}</span>
         </span>
       ))}
     </span>
@@ -109,6 +116,57 @@ import SoftwareWorld from './SoftwareWorld.astro';
     </span>
   </div>
 </div>
+
+<script is:inline define:vars={{ ids, key: ORDER_KEY }}>
+  // Pick this visit's world order and apply it before the first paint.
+  (() => {
+    const last = ids.length - 1; // Contact stays last
+    let order = null;
+    try {
+      order = sessionStorage.getItem(key)?.split(',').map(Number) ?? null;
+    } catch {
+      // Storage blocked (e.g. private mode): shuffle without remembering.
+    }
+    const valid =
+      Array.isArray(order) &&
+      order.length === ids.length &&
+      order[last] === last &&
+      ids.every((_, i) => order.includes(i));
+    if (!valid) {
+      const a = ids.slice(0, last).map((_, i) => i);
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      order = [...a, last];
+      try {
+        sessionStorage.setItem(key, order.join(','));
+      } catch {
+        // Storage blocked: the order still applies to this page view.
+      }
+    }
+    const root = document.querySelector('[data-worlds]');
+    if (!root) return;
+    const pos = (id) => order.indexOf(ids.indexOf(id));
+    const sortChildren = (parent, idOf) => {
+      if (!parent) return;
+      [...parent.children]
+        .sort((x, y) => pos(idOf(x)) - pos(idOf(y)))
+        .forEach((el) => parent.appendChild(el));
+    };
+    const byWorld = (el) => el.dataset.world;
+    const byGo = (el) => ids[Number(el.dataset.go)];
+    sortChildren(root.querySelector('.layers'), byWorld);
+    sortChildren(root.querySelector('[data-scroller]'), byWorld);
+    sortChildren(root.querySelector('.nav'), byGo);
+    sortChildren(root.querySelector('.dots'), byGo);
+    sortChildren(root.querySelector('[data-menu]'), byGo);
+    const first = ids[order[0]];
+    root.dataset.world = first;
+    root.dataset.order = order.join(',');
+    root.style.backgroundColor = 'var(--' + first + '-bg)';
+  })();
+</script>
 
 <noscript>
   <style is:inline>
@@ -342,8 +400,17 @@ import SoftwareWorld from './SoftwareWorld.astro';
   }
 
   [data-for],
+  [data-hint],
   .on-desktop {
     display: none;
+  }
+
+  .worlds[data-pos='0'] [data-hint='0'],
+  .worlds[data-pos='1'] [data-hint='1'],
+  .worlds[data-pos='2'] [data-hint='2'],
+  .worlds[data-pos='3'] [data-hint='3'],
+  .worlds[data-pos='4'] [data-hint='4'] {
+    display: inline;
   }
 
   .worlds[data-world='software'] [data-for='software'],
