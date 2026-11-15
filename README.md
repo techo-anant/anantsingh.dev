@@ -1,43 +1,42 @@
-# Astro Starter Kit: Minimal
+# anantsingh.dev
+
+Source for [anantsingh.dev](https://anantsingh.dev), the personal portfolio of Anant Kumar Singh,
+covering work across software, AI, robotics and accounting.
+
+Built with [Astro](https://astro.build) and TypeScript (strict), deployed on Railway.
+
+## Running locally
+
+Requires Node 26 (see `.nvmrc`; `fnm use` or `nvm use` picks it up).
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev        # http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Scripts
 
-## 🚀 Project Structure
+| Command                | What it does                                  |
+| :--------------------- | :-------------------------------------------- |
+| `npm run dev`          | Start the dev server                          |
+| `npm run build`        | Build the static site to `dist/`              |
+| `npm run preview`      | Serve the built site locally                  |
+| `npm run check`        | Type check (`astro check`)                    |
+| `npm run lint`         | ESLint + Stylelint                            |
+| `npm run format`       | Format everything with Prettier               |
+| `npm run format:check` | Check formatting without writing (used in CI) |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Contributing workflow
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+- One branch per change (`feat/...`, `fix/...`, `chore/...`, `docs/...`, `refactor/...`).
+- Commits and PR titles follow [Conventional Commits](https://www.conventionalcommits.org);
+  commitlint checks commit messages and CI checks PR titles.
+- PRs are squash-merged into `main`, which deploys to Railway.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## License
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+The **code** in this repository is licensed under the [MIT License](LICENSE).
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The **written content, images and visual designs** (everything under `src/content/`, plus the
+site's artwork and copy) are © Anant Kumar Singh, all rights reserved, and are **not** covered
+by the MIT License.
