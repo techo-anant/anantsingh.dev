@@ -46,16 +46,48 @@ export function initWorlds(): void {
 
   let hashReady = false;
 
-  /** §3.4 go(i, scroll): activate world i, optionally scrolling to it. */
+  /**
+   * While a navigation scroll is in flight, the worlds it passes over must not
+   * become active (Software → Accounting should not flash AI and Robotics).
+   * Scroll sync is paused until the scroll settles.
+   */
+  let jumping = false;
+  let jumpTimer = 0;
+
+  /** The section crossing the middle of the scroller. */
+  function activeFromScroll(): WorldId | undefined {
+    if (!scroller) return undefined;
+    const mid = scroller.scrollTop + scroller.clientHeight / 2;
+    const i = sections.findIndex((s) => s.offsetTop <= mid && mid < s.offsetTop + s.offsetHeight);
+    return i >= 0 ? (i as WorldId) : undefined;
+  }
+
+  function endJump() {
+    if (!jumping) return;
+    jumping = false;
+    window.clearTimeout(jumpTimer);
+    // If the user scrolled during the jump, follow where they ended up.
+    const i = activeFromScroll();
+    if (i !== undefined) worlds.set({ active: i });
+  }
+
+  /**
+   * §3.4 go(i, scroll): activate world i, optionally scrolling to it.
+   * Neighbours scroll smoothly; longer jumps are instant, and the background
+   * reveal grows straight from the old world to the new one.
+   */
   function go(i: WorldId, scroll: boolean) {
+    const from = worlds.get().active;
     worlds.set({ active: i });
     const target = sections[i];
-    if (scroll && target && scroller) {
-      scroller.scrollTo({
-        top: target.offsetTop,
-        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-      });
-    }
+    if (!scroll || !target || !scroller) return;
+
+    const smooth = !prefersReducedMotion() && Math.abs(i - from) === 1;
+    jumping = true;
+    window.clearTimeout(jumpTimer);
+    // Fallback in case 'scrollend' never fires (already in place, old browser).
+    jumpTimer = window.setTimeout(endJump, smooth ? 1500 : 200);
+    scroller.scrollTo({ top: target.offsetTop, behavior: smooth ? 'smooth' : 'auto' });
   }
 
   function setMenu(open: boolean, { restoreFocus = true } = {}) {
@@ -98,6 +130,7 @@ export function initWorlds(): void {
   // ---- Scroll sync (§6.4) ------------------------------------------------
   const io = new IntersectionObserver(
     (entries) => {
+      if (jumping) return;
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const i = sections.indexOf(entry.target as HTMLElement);
@@ -108,6 +141,7 @@ export function initWorlds(): void {
     { root: scroller, rootMargin: '-50% 0px -50% 0px', threshold: 0 },
   );
   sections.forEach((s) => io.observe(s));
+  scroller.addEventListener('scrollend', endJump);
 
   /**
    * Move focus into the world we navigated to: screen readers announce it,
