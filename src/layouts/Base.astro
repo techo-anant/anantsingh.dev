@@ -11,9 +11,16 @@ interface Props {
 
 const {
   title = 'Anant Kumar Singh · An Ongoing Autobiography',
-  description = 'Anant Kumar Singh: Business and Computer Science, software, AI, robotics research and audit.',
+  description = 'The ongoing autobiography of Anant Kumar Singh, a Business and Computer Science student at the University of Windsor: software, AI, robotics research and audit.',
   noindex = false,
 } = Astro.props;
+
+/** §13: absolute URLs from `site` (astro.config). */
+const canonical = new URL(Astro.url.pathname, Astro.site);
+/** The cover as a 1200×630 share image (public/og.jpg). */
+const image = new URL('/og.jpg', Astro.site);
+const imageAlt =
+  'An Ongoing Autobiography, by Anant Kumar Singh: the title on cream paper with faint handwritten lines.';
 ---
 
 <!doctype html>
@@ -22,7 +29,29 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <link rel="canonical" href={canonical} />
+    )}
+
+    <!-- §13 Share previews (Open Graph, Twitter / X). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Anant Kumar Singh" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
