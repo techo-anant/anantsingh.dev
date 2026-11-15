@@ -29,7 +29,29 @@ interface Zoom {
 }
 
 const ZOOM_IN = 'transform 1.45s cubic-bezier(.7,0,.2,1)';
-const ZOOM_OUT = 'transform 1.3s cubic-bezier(.5,0,.2,1)';
+/** Zoom-out duration (s); eased with cubic-bezier(.5,0,.2,1) as in §5.5. */
+const ZOOM_OUT_DUR = 1.3;
+
+/** CSS cubic-bezier(x1, y1, x2, y2) as a function of progress 0..1. */
+function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
+  const bez = (t: number, a: number, b: number) =>
+    3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+  return (p: number) => {
+    if (p <= 0) return 0;
+    if (p >= 1) return 1;
+    // Find t where x(t) = p by bisection (x is monotonic for valid curves).
+    let lo = 0,
+      hi = 1,
+      t = p;
+    for (let i = 0; i < 30; i++) {
+      t = (lo + hi) / 2;
+      if (bez(t, x1, x2) < p) lo = t;
+      else hi = t;
+    }
+    return bez(t, y1, y2);
+  };
+}
+const easeZoomOut = cubicBezier(0.5, 0, 0.2, 1);
 
 /** The cover's elements, or null if any is missing. */
 function findElements() {
@@ -69,6 +91,9 @@ export function initCover(): void {
   /** Mask updates are expensive; on slow devices, update every other frame. */
   let stride = 1;
   let frame = 0;
+  /** The zoom applied by back(), and the running zoom-out (if any). */
+  let zoomed: Zoom | null = null;
+  let unzoomAt: number | null = null;
 
   // ---- Zoom (§5.4 steps 1 and 2) ----------------------------------------
   function measure(): Zoom {
@@ -79,6 +104,35 @@ export function initCover(): void {
     const ox = ar.left - rr.left + ar.width / 2,
       oy = ar.top - rr.top + ar.height / 2;
     return { ox, oy, S: (W * 0.94) / ar.width, tx: W / 2 - ox, ty: H / 2 - oy };
+  }
+
+  /**
+   * The zoom-out runs frame by frame from JS rather than as a CSS transition.
+   * A compositor-driven transition starting at ~20× only has the middle of the
+   * title rasterized, so the ends ("An", "hy") pop in late on GPU browsers.
+   * Changing the transform on the main thread each frame makes the browser
+   * draw everything visible before showing the frame.
+   */
+  function stepUnzoom(t: number) {
+    if (unzoomAt === null || !zoomed) return;
+    const p = Math.min(1, (t - unzoomAt) / ZOOM_OUT_DUR);
+    if (p >= 1) {
+      setZoom(null, 'none');
+      unzoomAt = null;
+      zoomed = null;
+      return;
+    }
+    const e = easeZoomOut(p);
+    // Same interpolation CSS uses for translate() scale() lists.
+    setZoom(
+      {
+        ...zoomed,
+        tx: zoomed.tx * (1 - e),
+        ty: zoomed.ty * (1 - e),
+        S: zoomed.S + (1 - zoomed.S) * e,
+      },
+      'none',
+    );
   }
 
   function setZoom(z: Zoom | null, transition: string) {
@@ -124,12 +178,14 @@ export function initCover(): void {
       const e = reduced ? 0.2 - (t - backAt) * 1.7 : 5.5 - (t - backAt) * 1.7;
       if (e < (reduced ? 0.1 : 1.62)) {
         setMask('');
-        setZoom(null, reduced ? 'none' : ZOOM_OUT);
+        if (reduced || !zoomed) setZoom(null, 'none');
+        else unzoomAt = t;
         phase = 'idle';
       } else {
         renderMask(e, true);
       }
     }
+    stepUnzoom(t);
     raf = requestAnimationFrame(tick);
   }
 
@@ -140,7 +196,8 @@ export function initCover(): void {
 
   // ---- Forward -----------------------------------------------------------
   function next() {
-    if (phase !== 'idle') return;
+    // Not while the zoom is still easing out (measure() needs the page at rest).
+    if (phase !== 'idle' || unzoomAt !== null) return;
     phase = 'leaving';
     leaveAt = performance.now() / 1000;
     splashes = makeSplashes(cover.clientWidth, cover.clientHeight, phone());
@@ -170,6 +227,7 @@ export function initCover(): void {
     if (!reduced) {
       setZoom(z, 'none');
       void zoomEl.offsetWidth; // apply without animating
+      zoomed = z;
     }
     phase = 'returning';
     backAt = performance.now() / 1000;
