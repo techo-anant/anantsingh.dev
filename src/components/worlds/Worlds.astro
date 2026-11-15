@@ -18,6 +18,7 @@ const ids = WORLDS.map((w) => w.id);
 import Paper from '../paper/Paper.astro';
 import AccountingWorld from './AccountingWorld.astro';
 import AIWorld from './AIWorld.astro';
+import ContactWorld from './ContactWorld.astro';
 import RoboticsWorld from './RoboticsWorld.astro';
 import SoftwareWorld from './SoftwareWorld.astro';
 ---
@@ -48,6 +49,7 @@ import SoftwareWorld from './SoftwareWorld.astro';
           {w.id === 'ai' && <AIWorld />}
           {w.id === 'robotics' && <RoboticsWorld />}
           {w.id === 'accounting' && <AccountingWorld />}
+          {w.id === 'contact' && <ContactWorld />}
         </div>
       </section>
     ))}

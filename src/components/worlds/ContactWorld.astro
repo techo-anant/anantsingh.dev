@@ -1,0 +1,367 @@
+---
+/**
+ * Contact world, the back cover (BUILD_PLAN §7.5): eyebrow, headline, the
+ * blurb, "write to me" with the email as the main link and a copy button,
+ * LinkedIn / GitHub (and Google Scholar when site.scholar is set), and "to be
+ * continued…" writing itself under the book. No ring, hit area or panel.
+ * Colors come from [data-world="contact"].
+ */
+import { getSite } from '../../lib/content';
+
+const site = await getSite();
+const links = site
+  ? [
+      { label: 'LinkedIn', href: site.linkedin },
+      { label: 'GitHub', href: site.github },
+      ...(site.scholar ? [{ label: 'Google Scholar', href: site.scholar }] : []),
+    ]
+  : [];
+---
+
+{site && (
+  <div class="contact">
+    <div class="col">
+      <p class="eyebrow fluid">Contact</p>
+      <h2 class="title fluid">
+        The next page is <em class="unwritten">unwritten.</em>
+      </h2>
+    </div>
+
+    <div class="block">
+      <p class="blurb fluid up" style="--d: 0.8s">
+        {site.blurb}
+      </p>
+      <div class="reach up" style="--d: 1.05s">
+        <span class="write fluid" aria-hidden="true">
+          write to me
+        </span>
+        <div class="mail-row">
+          <a class="mail fluid" href={`mailto:${site.email}`}>
+            {site.email}
+          </a>
+          <button
+            class="copy copy-desktop fluid"
+            type="button"
+            data-copy={site.email}
+            aria-live="polite"
+          >
+            copy
+          </button>
+        </div>
+      </div>
+      <div class="links up" style="--d: 1.3s">
+        <button
+          class="copy copy-phone fluid"
+          type="button"
+          data-copy={site.email}
+          aria-live="polite"
+        >
+          copy
+        </button>
+        {links.map((l) => (
+          <a class="link fluid" href={l.href} target="_blank" rel="noopener">
+            {l.label} ↗
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <p class="tbc fluid" aria-hidden="true">
+      to be continued…
+    </p>
+  </div>
+)}
+
+<script>
+  /** Copy the address; "copied ✓" for 1.8s (§7.5). Clipboard API, textarea fallback. */
+  const COPIED_MS = 1800;
+
+  function fallbackCopy(text: string): void {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.append(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+    } catch {
+      // Nothing else to try; the mailto link still works.
+    }
+    ta.remove();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    button.addEventListener('click', async () => {
+      const text = button.dataset.copy ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        fallbackCopy(text);
+      }
+      button.textContent = 'copied ✓';
+      clearTimeout(timer);
+      timer = setTimeout(() => (button.textContent = 'copy'), COPIED_MS);
+    });
+  });
+</script>
+
+<style>
+  /* Phone first (§7.5 phone); desktop below. */
+  .contact {
+    --body: var(--contact-body);
+
+    position: absolute;
+    inset: 0;
+  }
+
+  .col {
+    position: absolute;
+    top: calc(84 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .eyebrow {
+    --fs: 11;
+
+    font-family: var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .title {
+    --fs: 46;
+
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  .unwritten {
+    color: var(--accent);
+  }
+
+  .block {
+    position: absolute;
+    top: calc(548 / 844 * 100cqh);
+    right: 24px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Staggered reveal (§7.5): 0.8s, 1.05s, 1.3s. */
+  .up {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .up {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s ease var(--d),
+      transform 0.7s ease var(--d);
+  }
+
+  .blurb {
+    --fs: 18;
+
+    line-height: 1.35;
+    color: var(--body);
+  }
+
+  .reach {
+    display: flex;
+    padding-top: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .write {
+    --fs: 21;
+
+    display: inline-block;
+    font-family: var(--font-hand);
+    line-height: 1.2;
+    color: var(--accent);
+    transform: rotate(-3deg);
+    transform-origin: left center;
+  }
+
+  .mail-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .mail {
+    --fs: 29;
+
+    line-height: 1.2;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--accent);
+    transition: color 0.3s ease;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    column-gap: 24px;
+  }
+
+  .copy,
+  .link {
+    --fs: 12;
+
+    display: inline-flex;
+    min-height: 44px;
+    padding: 0;
+    align-items: center;
+    border: none;
+    background: none;
+    font-family: var(--font-mono);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  .copy {
+    color: var(--muted);
+  }
+
+  .link {
+    color: var(--ink);
+  }
+
+  .copy-desktop {
+    display: none;
+  }
+
+  .mail:hover,
+  .copy:hover,
+  .link:hover,
+  .mail:focus-visible,
+  .copy:focus-visible,
+  .link:focus-visible {
+    color: var(--accent);
+  }
+
+  .mail:focus-visible,
+  .copy:focus-visible,
+  .link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* "to be continued…" writes itself in (§7.5); hides at once on leaving. */
+  .tbc {
+    --fs: 22;
+
+    position: absolute;
+    top: calc(var(--oy) + 136px * var(--k, 1));
+    right: 22px;
+    font-family: var(--font-hand);
+    line-height: 1.6;
+    color: var(--accent);
+    pointer-events: none;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.3s ease;
+  }
+
+  :global(.worlds[data-entered] .world[data-active]) .tbc {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 2.4s cubic-bezier(0.45, 0.05, 0.35, 1) 1.8s;
+  }
+
+  /* Desktop (§7.5, §4.4). Keep in sync with src/lib/layout.ts. */
+  @media (width >= 820px) and (orientation: landscape) and (height >= 600px) {
+    .col {
+      top: calc(168 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(420px, 41.7cqw, 720px);
+      gap: 20px;
+    }
+
+    .eyebrow {
+      --fs: 12;
+    }
+
+    .title {
+      --fs: 72;
+    }
+
+    .block {
+      top: calc(500 / 900 * 100cqh);
+      right: auto;
+      left: var(--col-x);
+      width: clamp(420px, 41.7cqw, 720px);
+    }
+
+    .blurb {
+      --fs: 22;
+
+      /* 540 artboard px at 22px type. */
+      max-width: calc(540em / 22);
+      line-height: 1.36;
+    }
+
+    .reach {
+      padding-top: 30px;
+      gap: 2px;
+    }
+
+    .write {
+      --fs: 26;
+    }
+
+    .mail {
+      --fs: 42;
+
+      line-height: 1.15;
+    }
+
+    .copy-desktop {
+      display: inline-flex;
+      padding: 0 4px;
+    }
+
+    .copy-phone {
+      display: none;
+    }
+
+    .links {
+      padding-top: 18px;
+      column-gap: 32px;
+    }
+
+    .link {
+      --fs: 13;
+    }
+
+    .tbc {
+      --fs: 30;
+
+      top: calc(var(--oy) + 246px * var(--k, 1));
+      right: auto;
+      left: calc(var(--ox) - 160px * var(--k, 1));
+      width: calc(320px * var(--k, 1));
+      line-height: 1.4;
+      text-align: center;
+    }
+  }
+</style>
