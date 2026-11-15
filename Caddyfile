@@ -24,6 +24,11 @@
 
 	respond /health 200
 
+	# One address: www.anantsingh.dev → anantsingh.dev (path and query kept).
+	# The Railway hosts (production backup, PR previews) are served as usual.
+	@www host www.anantsingh.dev
+	redir @www https://anantsingh.dev{uri} permanent
+
 	header {
 		X-Content-Type-Options "nosniff"
 		-Server
