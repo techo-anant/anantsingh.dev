@@ -1,0 +1,288 @@
+---
+/**
+ * The research, softened (§8, 2026-11-15): one question, "what could fail".
+ * A rover drives along a moving road; its sensor cone finds an obstacle (a
+ * plain box). The detection shows a tick, then flickers to a red cross.
+ * Ported from the reference (Live.dc.html) with the person, the confidence
+ * labels and the other three questions removed. A 560×420 scene, 9s loop.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <div class="rb2-q" style="position: absolute; left: 30px; top: 26px; font-size: 15px;">
+    <span style="color: #FFC627;">?</span> what could fail
+  </div>
+  <div
+    class="rb2-road"
+    style="position: absolute; left: 0; right: 0; top: 290px; height: 64px; background-color: #26272A; background-image: linear-gradient(90deg, #FFC627 0 28px, transparent 28px 80px); background-size: 80px 3px; background-repeat: repeat-x; background-position: 0 30px;"
+  ></div>
+  <div style="position: absolute; left: 0; right: 0; top: 289px; height: 1px; background: rgba(242,240,234,0.25);"></div>
+  <!-- The obstacle: a plain box on the road. -->
+  <svg
+    aria-hidden="true"
+    width="52"
+    height="58"
+    viewBox="0 0 52 58"
+    fill="none"
+    style="position: absolute; left: 424px; top: 231px;"
+  >
+    <rect
+      x="2"
+      y="2"
+      width="48"
+      height="54"
+      rx="2"
+      fill="#26272A"
+      stroke="#F2F0EA"
+      stroke-width="2.2"
+      stroke-linejoin="round"
+    ></rect>
+    <path d="M 2 16 L 50 16" stroke="#F2F0EA" stroke-width="2.2" stroke-linecap="round"></path>
+  </svg>
+  <div
+    class="rb2-box"
+    style="position: absolute; left: 414px; top: 218px; width: 72px; height: 82px; box-sizing: border-box; border: 2px dashed #FFC627;"
+  ></div>
+  <span
+    class="rb2-ok"
+    style="position: absolute; left: 414px; top: 194px; min-width: 22px; text-align: center; font-size: 13px; line-height: 20px; color: #17181A; background: #FFC627; padding: 0 4px;"
+  >
+    ✓
+  </span>
+  <span
+    class="rb2-bad"
+    style="position: absolute; left: 414px; top: 194px; min-width: 22px; text-align: center; font-size: 13px; line-height: 20px; color: #17181A; background: #FF5A4E; padding: 0 4px;"
+  >
+    ✗
+  </span>
+  <div
+    class="rb2-rover"
+    style="position: absolute; left: 24px; top: 240px; width: 96px; height: 54px;"
+  >
+    <div
+      class="rb2-cone"
+      style="position: absolute; left: 88px; top: -26px; width: 300px; height: 90px; background: linear-gradient(90deg, rgba(255,198,39,0.28), rgba(255,198,39,0)); clip-path: polygon(0 50%, 100% 0, 100% 100%);"
+    ></div>
+    <svg
+      aria-hidden="true"
+      width="96"
+      height="54"
+      viewBox="0 0 96 54"
+      fill="none"
+      style="position: absolute; inset: 0;"
+    >
+      <rect
+        x="6"
+        y="14"
+        width="78"
+        height="24"
+        rx="4"
+        fill="#17181A"
+        stroke="#FFC627"
+        stroke-width="2"
+      ></rect>
+      <rect x="56" y="4" width="16" height="10" rx="2" fill="#FFC627"></rect>
+      <circle cx="86" cy="26" r="3" fill="#FFC627"></circle>
+      <circle cx="22" cy="44" r="9" stroke="#F2F0EA" stroke-width="2.2"></circle>
+      <circle cx="68" cy="44" r="9" stroke="#F2F0EA" stroke-width="2.2"></circle>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    color: #f2f0ea;
+  }
+
+  @keyframes rbDrive {
+    0% {
+      opacity: 0;
+      transform: translateX(0);
+    }
+
+    4% {
+      opacity: 1;
+    }
+
+    34% {
+      transform: translateX(200px);
+    }
+
+    52% {
+      transform: translateX(236px);
+    }
+
+    92% {
+      opacity: 1;
+      transform: translateX(236px);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateX(236px);
+    }
+  }
+
+  .rb2-rover {
+    animation: rbDrive 9s cubic-bezier(0.4, 0, 0.3, 1) infinite;
+  }
+
+  @keyframes rbCone {
+    0%,
+    16% {
+      opacity: 0;
+    }
+
+    24%,
+    90% {
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .rb2-cone {
+    animation: rbCone 9s ease infinite;
+  }
+
+  @keyframes rbBox {
+    0%,
+    26% {
+      border-color: #ffc627;
+      opacity: 0;
+    }
+
+    30%,
+    44% {
+      border-color: #ffc627;
+      opacity: 1;
+    }
+
+    46% {
+      opacity: 0.15;
+    }
+
+    48% {
+      border-color: #ff5a4e;
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.3;
+    }
+
+    52%,
+    90% {
+      border-color: #ff5a4e;
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .rb2-box {
+    opacity: 0;
+    animation: rbBox 9s ease infinite;
+  }
+
+  @keyframes rbOk {
+    0%,
+    26% {
+      opacity: 0;
+    }
+
+    30%,
+    45% {
+      opacity: 1;
+    }
+
+    47%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .rb2-ok {
+    opacity: 0;
+    animation: rbOk 9s ease infinite;
+  }
+
+  @keyframes rbBad {
+    0%,
+    47% {
+      opacity: 0;
+    }
+
+    49% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.2;
+    }
+
+    52%,
+    90% {
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .rb2-bad {
+    opacity: 0;
+    animation: rbBad 9s ease infinite;
+  }
+
+  @keyframes rbQ {
+    0% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    5%,
+    38% {
+      opacity: 1;
+      transform: none;
+    }
+
+    44%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .rb2-q {
+    opacity: 0;
+    animation: rbQ 9s ease 5s infinite;
+  }
+
+  @keyframes roadMove {
+    from {
+      background-position: 0 30px;
+    }
+
+    to {
+      background-position: -80px 30px;
+    }
+  }
+
+  .rb2-road {
+    animation: roadMove 0.8s linear infinite;
+  }
+</style>
