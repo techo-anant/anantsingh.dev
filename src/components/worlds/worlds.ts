@@ -11,7 +11,13 @@
  *   history entries). Visiting /#contact starts on Contact.
  * - The DOM reflects state through attributes; CSS does the styling.
  */
-import { currentLayout, onLayoutChange, prefersReducedMotion, type Layout } from '../../lib/layout';
+import {
+  currentLayout,
+  objectFrame,
+  onLayoutChange,
+  prefersReducedMotion,
+  type Layout,
+} from '../../lib/layout';
 import { createStore } from '../../lib/store';
 import { WORLDS, worldIndex, type WorldId } from '../../lib/worlds';
 
@@ -24,7 +30,15 @@ export interface WorldsState {
   layout: Layout;
   /** The cover has finished its transition (or was skipped). Set by cover.ts. */
   coverDone: boolean;
+  /** Project panel state (§3.4) for the world in `pw`. */
+  proj: Proj;
+  /** Which world the panel belongs to. */
+  pw: WorldId;
+  /** Focused item index in the gallery. */
+  fi: 0 | 1 | 2;
 }
+
+export type Proj = 'idle' | 'gallery' | 'focus';
 
 export const worlds = createStore<WorldsState>({
   entered: false,
@@ -33,7 +47,18 @@ export const worlds = createStore<WorldsState>({
   layout: 'phone',
   // True unless a cover is on the page; the cover sets it on init.
   coverDone: true,
+  proj: 'idle',
+  pw: 0,
+  fi: 0,
 });
+
+/** §3.4 panel actions, shared by the world components. */
+export const panel = {
+  openGallery: (pw: WorldId) => worlds.set({ proj: 'gallery', pw }),
+  focus: (pw: WorldId, fi: 0 | 1 | 2) => worlds.set({ proj: 'focus', pw, fi }),
+  backGallery: () => worlds.set({ proj: 'gallery' }),
+  close: () => worlds.set({ proj: 'idle' }),
+};
 
 export function initWorlds(): void {
   const root = document.querySelector<HTMLElement>('[data-worlds]');
@@ -49,6 +74,23 @@ export function initWorlds(): void {
   const dots = root.querySelector<HTMLElement>('.dots');
 
   let hashReady = false;
+
+  /** Activate world i. A panel that belongs to another world closes (§3.4). */
+  function setActive(i: WorldId) {
+    const { proj, pw } = worlds.get();
+    worlds.set(proj !== 'idle' && pw !== i ? { active: i, proj: 'idle' } : { active: i });
+  }
+
+  /**
+   * Object frame as CSS variables on the worlds root (--ox, --oy in px; --k
+   * unitless): world UI anchored to the particle object uses these.
+   */
+  const applyFrame = () => {
+    const f = objectFrame(root.clientWidth, root.clientHeight, worlds.get().layout);
+    root.style.setProperty('--ox', `${f.ox.toFixed(1)}px`);
+    root.style.setProperty('--oy', `${f.oy.toFixed(1)}px`);
+    root.style.setProperty('--k', f.k.toFixed(4));
+  };
 
   /**
    * While a navigation scroll is in flight, the worlds it passes over must not
@@ -72,7 +114,7 @@ export function initWorlds(): void {
     window.clearTimeout(jumpTimer);
     // If the user scrolled during the jump, follow where they ended up.
     const i = activeFromScroll();
-    if (i !== undefined) worlds.set({ active: i });
+    if (i !== undefined) setActive(i);
   }
 
   /**
@@ -82,7 +124,7 @@ export function initWorlds(): void {
    */
   function go(i: WorldId, scroll: boolean) {
     const from = worlds.get().active;
-    worlds.set({ active: i });
+    setActive(i);
     const target = sections[i];
     if (!scroll || !target || !scroller) return;
 
@@ -186,6 +228,7 @@ export function initWorlds(): void {
     if (!coverDone) return; // the cover handles keys while it is up
     if (event.key === 'Escape') {
       if (menuOpen) setMenu(false);
+      else if (worlds.get().proj !== 'idle') panel.close();
       return;
     }
     if (menuOpen || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey)
@@ -216,8 +259,11 @@ export function initWorlds(): void {
 
   // ---- Layout ------------------------------------------------------------
   worlds.set({ layout: currentLayout() });
+  applyFrame();
+  window.addEventListener('resize', applyFrame, { passive: true });
   onLayoutChange((layout) => {
     worlds.set({ layout });
+    applyFrame();
     if (layout === 'desktop' && worlds.get().menu) setMenu(false, { restoreFocus: false });
   });
 

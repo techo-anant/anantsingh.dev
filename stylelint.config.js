@@ -12,5 +12,7 @@ export default {
     'custom-property-empty-line-before': null,
     // Keyframe names match the reference (fadeUp, ringPulse, ...) per BUILD_PLAN §9.
     'keyframes-name-pattern': null,
+    // Astro's scoped-style escape hatch.
+    'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
   },
 };

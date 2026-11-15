@@ -9,6 +9,7 @@
  */
 import { WORLDS } from '../../lib/worlds';
 import Paper from '../paper/Paper.astro';
+import SoftwareWorld from './SoftwareWorld.astro';
 ---
 
 <div class="worlds" data-worlds data-world={WORLDS[0].id}>
@@ -32,7 +33,7 @@ import Paper from '../paper/Paper.astro';
         tabindex="-1"
         aria-label={w.label}
       >
-        <div class="world-content">{/* World content arrives in PRs 5 to 9. */}</div>
+        <div class="world-content">{w.id === 'software' && <SoftwareWorld />}</div>
       </section>
     ))}
   </div>

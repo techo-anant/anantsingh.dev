@@ -1,0 +1,371 @@
+---
+/**
+ * Fiscale: a 2024 Ontario return tallies to a "REFUND $128" stamp; an OSAP estimate grows grant and loan bars (§8). Illustrative numbers.
+ * Ported from the reference (Live.dc.html); a 560×420 scene that loops forever.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <div
+    class="fs-card"
+    style="position: absolute; left: 30px; top: 34px; width: 318px; padding: 18px 20px 20px; box-sizing: border-box; border: 1px solid rgba(240,246,252,0.18); border-radius: 10px; background: #0F151D;"
+  >
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #8B949E; letter-spacing: 0.06em;">
+      <span>2024 RETURN</span>
+      <span style="border: 1px solid rgba(95,237,131,0.45); color: #5FED83; padding: 2px 7px; border-radius: 999px;">
+        ON
+      </span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0 10px; border-bottom: 1px solid rgba(240,246,252,0.25);">
+      <span style="font-size: 12px; color: #C9D1D9;">T4 income</span>
+      <span
+        class="fs-type"
+        style="display: inline-block; overflow: hidden; white-space: nowrap; font-size: 20px; color: #F0F6FC; text-align: right;"
+      >
+        $18,400
+      </span>
+    </div>
+    <div
+      class="fs-r1"
+      style="display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(240,246,252,0.1); font-size: 13px;"
+    >
+      <span style="color: #8B949E;">Federal tax</span>
+      <span style="color: #C9D1D9;">−$1,251</span>
+    </div>
+    <div
+      class="fs-r2"
+      style="display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(240,246,252,0.1); font-size: 13px;"
+    >
+      <span style="color: #8B949E;">Ontario tax</span>
+      <span style="color: #C9D1D9;">−$470</span>
+    </div>
+    <div
+      class="fs-r3"
+      style="display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(240,246,252,0.1); font-size: 13px;"
+    >
+      <span style="color: #8B949E;">Tuition credit</span>
+      <span style="color: #5FED83;">+$1,190</span>
+    </div>
+    <div
+      class="fs-r4"
+      style="display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(240,246,252,0.1); font-size: 13px;"
+    >
+      <span style="color: #8B949E;">CPP · EI credits</span>
+      <span style="color: #5FED83;">+$187</span>
+    </div>
+    <div
+      class="fs-r5"
+      style="display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(240,246,252,0.1); font-size: 13px;"
+    >
+      <span style="color: #8B949E;">Tax withheld</span>
+      <span style="color: #C9D1D9;">+$472</span>
+    </div>
+    <div class="fs-rule" style="height: 2px; margin-top: 12px; background: #F0F6FC;"></div>
+    <div
+      class="fs-stamp"
+      style="position: absolute; right: 18px; bottom: -26px; padding: 8px 14px; border: 2px solid #5FED83; border-radius: 6px; background: #0D1117; color: #5FED83; font-size: 18px; font-weight: 500; letter-spacing: 0.04em;"
+    >
+      REFUND $128
+    </div>
+  </div>
+  <div
+    class="fs-card"
+    style="position: absolute; left: 384px; top: 34px; width: 146px; height: 330px;"
+  >
+    <div style="font-size: 11px; color: #8B949E; letter-spacing: 0.06em;">OSAP ESTIMATE</div>
+    <div style="position: absolute; left: 10px; right: 10px; bottom: 54px; height: 210px; display: flex; align-items: flex-end; gap: 18px; border-bottom: 1px solid rgba(240,246,252,0.25);">
+      <div
+        class="fs-bar"
+        style="flex: 1; height: 168px; border-radius: 4px 4px 0 0; background: #5FED83;"
+      ></div>
+      <div
+        class="fs-bar"
+        style="flex: 1; height: 102px; border-radius: 4px 4px 0 0; border: 1.5px solid #F0F6FC; border-bottom: none; box-sizing: border-box;"
+      ></div>
+    </div>
+    <div
+      class="fs-lab"
+      style="position: absolute; left: 10px; right: 10px; bottom: 30px; display: flex; gap: 18px; font-size: 11px; color: #C9D1D9;"
+    >
+      <span style="flex: 1; text-align: center;">grant</span>
+      <span style="flex: 1; text-align: center;">loan</span>
+    </div>
+    <div
+      class="fs-lab"
+      style="position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 11px; color: #8B949E;"
+    >
+      ≈ $86 / mo to repay
+    </div>
+  </div>
+  <span style="position: absolute; left: 30px; top: 392px; font-size: 11px; color: #6E7681;">
+    illustrative numbers · all 10 provinces
+  </span>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    font-family: var(--font-mono);
+    color: #f0f6fc;
+  }
+
+  @keyframes fsCard {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    6%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-card {
+    animation: fsCard 7s ease infinite;
+  }
+
+  @keyframes fsType {
+    0%,
+    7% {
+      width: 0;
+    }
+
+    17%,
+    100% {
+      width: 7ch;
+    }
+  }
+
+  .fs-type {
+    animation: fsType 7s steps(7) infinite;
+  }
+
+  @keyframes fsR1 {
+    0%,
+    19% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    23%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-r1 {
+    animation: fsR1 7s ease infinite;
+  }
+
+  @keyframes fsR2 {
+    0%,
+    25% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    29%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-r2 {
+    animation: fsR2 7s ease infinite;
+  }
+
+  @keyframes fsR3 {
+    0%,
+    31% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    35%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-r3 {
+    animation: fsR3 7s ease infinite;
+  }
+
+  @keyframes fsR4 {
+    0%,
+    37% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    41%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-r4 {
+    animation: fsR4 7s ease infinite;
+  }
+
+  @keyframes fsR5 {
+    0%,
+    43% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    47%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-r5 {
+    animation: fsR5 7s ease infinite;
+  }
+
+  @keyframes fsRule {
+    0%,
+    50% {
+      transform: scaleX(0);
+      opacity: 1;
+    }
+
+    56%,
+    90% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      transform: scaleX(1);
+      opacity: 0;
+    }
+  }
+
+  .fs-rule {
+    transform-origin: left center;
+    animation: fsRule 7s ease infinite;
+  }
+
+  @keyframes fsStamp {
+    0%,
+    57% {
+      opacity: 0;
+      transform: rotate(-8deg) scale(1.6);
+    }
+
+    62%,
+    90% {
+      opacity: 1;
+      transform: rotate(-8deg) scale(1);
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: rotate(-8deg) scale(1);
+    }
+  }
+
+  .fs-stamp {
+    animation: fsStamp 7s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+  }
+
+  @keyframes fsBar {
+    0%,
+    64% {
+      transform: scaleY(0);
+      opacity: 1;
+    }
+
+    74%,
+    90% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+
+    97%,
+    100% {
+      transform: scaleY(1);
+      opacity: 0;
+    }
+  }
+
+  .fs-bar {
+    transform-origin: bottom center;
+    animation: fsBar 7s cubic-bezier(0.3, 0.7, 0.2, 1) infinite;
+  }
+
+  @keyframes fsLab {
+    0%,
+    72% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    77%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .fs-lab {
+    animation: fsLab 7s ease infinite;
+  }
+</style>

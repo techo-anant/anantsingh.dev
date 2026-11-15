@@ -1,0 +1,378 @@
+---
+/**
+ * Subscription API: four requests in a log: sign-in 200, create 201, list 200 with renewals, and a 401 without a token (§8).
+ * Ported from the reference (Live.dc.html); a 560×420 scene that loops forever.
+ * Decorative: the panel's text line describes it for screen readers.
+ */
+---
+
+<div class="demo" aria-hidden="true">
+  <div style="position: absolute; left: 30px; right: 30px; top: 30px; display: flex; flex-direction: column; gap: 22px;">
+    <div>
+      <div class="ap-q1" style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+        <span style="color: #5FED83; width: 40px;">POST</span>
+        <span style="color: #F0F6FC;">/auth/sign-in</span>
+        <span
+          class="ap-c1"
+          style="margin-left: auto; padding: 3px 9px; border-radius: 999px; background: rgba(95,237,131,0.12); color: #5FED83; font-size: 12px;"
+        >
+          200
+        </span>
+      </div>
+      <div class="ap-q1" style="padding: 6px 0 0 50px; font-size: 12px; color: #8B949E;">
+        token <span style="color: #C9D1D9;">eyJhbGciOiJIUzI1NiJ9…</span>
+      </div>
+    </div>
+    <div>
+      <div class="ap-q2" style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+        <span style="color: #5FED83; width: 40px;">POST</span>
+        <span style="color: #F0F6FC;">/subscriptions</span>
+        <span style="padding: 2px 7px; border: 1px solid rgba(240,246,252,0.25); border-radius: 4px; font-size: 11px; color: #C9D1D9;">
+          Bearer ✓
+        </span>
+        <span
+          class="ap-c2"
+          style="margin-left: auto; padding: 3px 9px; border-radius: 999px; background: rgba(95,237,131,0.12); color: #5FED83; font-size: 12px;"
+        >
+          201 created
+        </span>
+      </div>
+      <div class="ap-q2" style="padding: 6px 0 0 50px; font-size: 12px; color: #8B949E;">
+        {'{ "name": "Netflix", "price": 15.99, "frequency": "monthly" }'}
+      </div>
+    </div>
+    <div>
+      <div class="ap-q3" style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+        <span style="color: #79C0FF; width: 40px;">GET</span>
+        <span style="color: #F0F6FC;">/subscriptions/user/me</span>
+        <span style="padding: 2px 7px; border: 1px solid rgba(240,246,252,0.25); border-radius: 4px; font-size: 11px; color: #C9D1D9;">
+          Bearer ✓
+        </span>
+        <span
+          class="ap-c3"
+          style="margin-left: auto; padding: 3px 9px; border-radius: 999px; background: rgba(95,237,131,0.12); color: #5FED83; font-size: 12px;"
+        >
+          200
+        </span>
+      </div>
+      <div style="padding: 8px 0 0 50px;">
+        <div
+          class="ap-t1"
+          style="display: grid; grid-template-columns: 1fr 70px 110px; padding: 4px 0; font-size: 12px; color: #C9D1D9;"
+        >
+          <span>Netflix</span>
+          <span style="text-align: right;">$15.99</span>
+          <span style="text-align: right; color: #5FED83;">renews Dec 3</span>
+        </div>
+        <div
+          class="ap-t2"
+          style="display: grid; grid-template-columns: 1fr 70px 110px; padding: 4px 0; font-size: 12px; color: #C9D1D9;"
+        >
+          <span>Spotify</span>
+          <span style="text-align: right;">$11.99</span>
+          <span style="text-align: right; color: #8B949E;">renews Dec 9</span>
+        </div>
+        <div
+          class="ap-t3"
+          style="display: grid; grid-template-columns: 1fr 70px 110px; padding: 4px 0; font-size: 12px; color: #C9D1D9;"
+        >
+          <span>iCloud+</span>
+          <span style="text-align: right;">$3.99</span>
+          <span style="text-align: right; color: #8B949E;">renews Dec 14</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="ap-q4" style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+        <span style="color: #5FED83; width: 40px;">POST</span>
+        <span style="color: #F0F6FC;">/subscriptions</span>
+        <span style="padding: 2px 7px; border: 1px dashed rgba(255,123,114,0.6); border-radius: 4px; font-size: 11px; color: #FF7B72;">
+          no token
+        </span>
+        <span
+          class="ap-c4"
+          style="margin-left: auto; padding: 3px 9px; border-radius: 999px; background: rgba(255,123,114,0.12); color: #FF7B72; font-size: 12px;"
+        >
+          401
+        </span>
+      </div>
+      <div class="ap-q4" style="padding: 6px 0 0 50px; font-size: 12px; color: #8B949E;">
+        rejected before it reaches the database
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    width: 560px;
+    height: 420px;
+    font-family: var(--font-mono);
+    color: #f0f6fc;
+  }
+
+  @keyframes apQ1 {
+    0%,
+    2% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    6%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-q1 {
+    animation: apQ1 7s ease infinite;
+  }
+
+  @keyframes apQ2 {
+    0%,
+    20% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    24%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-q2 {
+    animation: apQ2 7s ease infinite;
+  }
+
+  @keyframes apQ3 {
+    0%,
+    38% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    42%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-q3 {
+    animation: apQ3 7s ease infinite;
+  }
+
+  @keyframes apQ4 {
+    0%,
+    62% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    66%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-q4 {
+    animation: apQ4 7s ease infinite;
+  }
+
+  @keyframes apC1 {
+    0%,
+    8% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    11%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-c1 {
+    animation: apC1 7s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+  }
+
+  @keyframes apC2 {
+    0%,
+    26% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    29%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-c2 {
+    animation: apC2 7s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+  }
+
+  @keyframes apC3 {
+    0%,
+    44% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    47%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-c3 {
+    animation: apC3 7s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+  }
+
+  @keyframes apC4 {
+    0%,
+    68% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    71%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-c4 {
+    animation: apC4 7s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+  }
+
+  @keyframes apT1 {
+    0%,
+    48% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    51%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-t1 {
+    animation: apT1 7s ease infinite;
+  }
+
+  @keyframes apT2 {
+    0%,
+    51% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    54%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-t2 {
+    animation: apT2 7s ease infinite;
+  }
+
+  @keyframes apT3 {
+    0%,
+    54% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    57%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+
+    97%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  .ap-t3 {
+    animation: apT3 7s ease infinite;
+  }
+</style>

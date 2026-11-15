@@ -27,7 +27,11 @@ export function initParticles(): ParticleEngine | undefined {
   worlds.subscribe((s) => {
     engine.setPhone(s.layout === 'phone');
     engine.setWorld(s.active);
-    engine.morphTo(SHAPE_OF[s.active]);
+    // §3.4: gallery → 4 (Software) or 6 (AI); open project → 5 (dimmed scatter).
+    const panelOpen = s.proj !== 'idle' && s.pw === s.active;
+    if (panelOpen && s.proj === 'gallery') engine.morphTo(s.pw === 1 ? 6 : 4);
+    else if (panelOpen && s.proj === 'focus') engine.morphTo(5);
+    else engine.morphTo(SHAPE_OF[s.active]);
   });
 
   window.addEventListener('pointermove', (e) => engine.pointer(e.clientX, e.clientY), {
