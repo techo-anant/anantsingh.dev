@@ -1,0 +1,55 @@
+# Web server config for Railway (Railpack serves the static build with Caddy).
+# Based on Railpack's default Node Caddyfile, with two changes:
+#   1. No fallback to /index.html: this is a multi-page site, so unknown paths
+#      return 404 and show dist/404.html.
+#   2. Long-lived caching for Astro's fingerprinted assets in /_astro/.
+{
+	admin off
+	persist_config off
+	auto_https off
+
+	log {
+		format json
+	}
+
+	servers {
+		trusted_proxies static private_ranges 100.0.0.0/8 # trust Railway's proxy
+	}
+}
+
+:{$PORT:80} {
+	log {
+		format json
+	}
+
+	respond /health 200
+
+	header {
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+
+	# File names in /_astro/ change whenever their content does.
+	header /_astro/* Cache-Control "public, max-age=31536000, immutable"
+
+	root * /app/dist
+
+	encode {
+		gzip
+		zstd
+	}
+
+	# Exact file, then /path.html, then /path/index.html. No SPA fallback.
+	try_files {path} {path}.html {path}/index.html
+
+	file_server {
+		hide .git
+		hide .env*
+	}
+
+	# Serve the designed 404 page; the response keeps its 404 status.
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server
+	}
+}
